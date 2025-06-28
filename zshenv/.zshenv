@@ -1,0 +1,42 @@
+#!/bin/sh
+
+# Update PATH
+[ -d "$HOME/code/scripts/" ] && \
+        SCRIPT_DIR=$(find $HOME/code/scripts -name ".git" -prune -o -type d -print) && \
+        export PATH="$PATH:${SCRIPT_DIR//$'\n'/:}" 
+PATH=$PATH:$HOME/.local/bin
+
+# Default Programs
+export BROWSER="brave"
+export EDITOR="vim"
+export LANG="en_US.UTF-8"
+export PDF_READER="zathura"
+export QT_QPA_PLATFORMTHEME=qt5ct
+export TERMINAL="st"
+export VIFMRC="~/.config/vifm/vifmrc"
+export SUDO_ASKPASS="$HOME/code/scripts/dmenu/dmenupass"
+
+# ~/ Clean Up
+
+export CARGO_HOME="$HOME/.local/cargo"
+export CUDA_CACHE_PATH="$HOME/.cache/nv"
+export GNUPGHOME="$HOME/.local/share/.gnupg"
+export HISTFILE="$XDG_DATA_HOME"/zsh/history
+export LESSHISTFILE="-"
+export MATLAB_LOG_DIR="/tmp"
+export NOTMUCH_CONFIG="$HOME/.config/notmuch/notmuchrc"
+export NPM_CONFIG_USERCONFIG="$HOME/.config/npm/npmrc"
+export PASSWORD_STORE_DIR="$HOME/.local/share/password-store"
+export RUSTUP_HOME="$HOME/.local/share/rustup"
+export SSB_HOME="$XDG_DATA_HOME/zoom"
+export TERMINFO="$XDG_DATA_HOME/terminfo"
+export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:/usr/share/terminfo"
+export XMONAD_CACHE_HOME="$HOME/.config/xmonad/"
+export XMONAD_CONFIG_HOME="$HOME/.config/xmonad/"
+export XMONAD_DATA_HOME="$HOME/.config/xmonad/"
+export ZDOTDIR="$HOME/.config/zsh/"
+export _JAVA_AWT_WM_NONREPARENTING=1 # <-- So matlab will load
+export _JAVA_OPTIONS=-Djava.util.prefs.userRoot=$HOME/.config/java
+
+# Execute X if it is not running
+[ -n $DISPLAY ] && startx

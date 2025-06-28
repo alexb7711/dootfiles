@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =9
+let g:netrw_dirhist_9='/home/alexander/code/suckless/dwmblocks/scripts'
+let g:netrw_dirhist_8='/home/alexander/code/suckless/dwmblocks'
+let g:netrw_dirhist_7='/home/alexander/code/suckless/dwmblocks/scripts'
+let g:netrw_dirhist_6='/home/alexander/Downloads/dwmblocks'
+let g:netrw_dirhist_5='/home/alexander/code/suckless/st'
+let g:netrw_dirhist_4='/home/alexander/nextcloud/Documents/papers/Resume'
+let g:netrw_dirhist_3='/home/alexander/code/dotfiles/vim/.config/vim/after/ftplugin'
+let g:netrw_dirhist_2='/home/alexander/code/dotfiles/vim/.config/vim/after'
+let g:netrw_dirhist_1='/home/alexander/code/dotfiles/vim/.config/vim'
+let g:netrw_dirhist_0='/home/alexander/code/dotfiles/vim/.config'

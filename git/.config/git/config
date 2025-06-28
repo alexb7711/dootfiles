@@ -1,0 +1,98 @@
+################################################################################
+# General
+################################################################################
+[init]
+	defaultBranch = main
+[user]
+	name = Alexander Brown
+	email = alex.brown7711@gmail.com
+[core]
+	editor   = vim
+        autocrlf = true # Auto-convert correct line endings
+        whitespace = error # Complain if trying to commit only white space
+        preloadindex = true # Load index into memory
+[advice]
+        addEmptyPathspec = false
+        pushNonFastForward = false
+        statusHints = false
+[pager]
+
+################################################################################
+# Color
+################################################################################
+[color]
+	ui = auto
+[color "meta"]
+        meta = black bold
+        frag = magenta
+        context = white
+        whitespace = yellow reverse
+        old = red
+[color "branch"]
+        current = magenta
+        local = default
+        remote = yellow
+        upstream = blue
+        plain = white
+
+################################################################################
+# Aliases
+################################################################################
+[alias]
+	lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+	lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+        lg = !"git lg1"
+
+[url "git@github.com:alexb7711/"]
+        insteadOf = "ab:"
+[url "git@github.com:"]
+        insteadOf = "gh:"
+
+################################################################################
+# Push/Pull/Diff/Status/Log/Branch/Tag
+################################################################################
+[push]
+        autoSetupRemote = true # Automatically create remote branch
+        default = current # Use current branch if not specified
+        followTags = true # Push tags with just a push
+[pull]
+        default = current
+	rebase = false
+[diff]
+        context = 3
+        renames = copies # Don't show the diff of renamed/copied files
+        interHunkContext = 10 # Group hunks of code
+[status]
+        branch = true
+        showStash = true
+        showUntrackedFiles = all
+[log]
+        abbrevCommit = true
+        graphColors = blue,yellow,cyan,magenta,green,red
+[branch]
+        sort = committerdate
+[tag]
+        sort = -taggerdate
+
+################################################################################
+# Merging
+################################################################################
+[merge]
+	tool = "vimdiff"
+; [mergetool]
+	; prompt = false
+; [mergetool "vim"]
+        ; cmd = vim -d -c \"wincmd l\" -c \"norm ]c\" \"$LOCAL\" \"$MERGED\" \"$REMOTE\"
+
+################################################################################
+# Diff
+################################################################################
+[diff]
+        tool = "vim"
+
+[difftool]
+        prompt = false
+[difftool "vim"]
+        cmd = vim - -R -c 'set foldmethod=syntax'
+[config "pull"]
+	rebase = false

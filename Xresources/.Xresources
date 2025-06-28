@@ -1,0 +1,42 @@
+Xcursor.size: 5
+
+!!==============================================================================
+! SUCKLESS
+!!==============================================================================
+
+!! everforest:
+*.foreground:  #D3C6AA
+*.background:  #1E2326
+*.cursorColor: #5C6A72
+! Black
+*.color0:      #272E33
+! Red
+*.color1:      #E67E80
+! Green
+*.color2:      #A7C080
+! Yellow
+*.color3:      #DBBC7F
+! Blue
+*.color4:      #7FBBB3
+! Purple
+*.color5:      #D699B6
+! Aqua
+*.color6:      #83C092
+! Gray
+*.color7:      #7A8478
+! Gray
+*.color8:      #272E33
+! Dark Red
+*.color9:      #F85552
+! Dark Red
+*.color10:     #8DA101
+! Dark Yellow
+*.color11:     #DFA000
+! Dark Blue
+*.color12:     #3A94C5
+! Dark Purple
+*.color13:     #DF69BA
+! Dark Aqua
+*.color14:     #35A77C
+! Dark Gray
+*.color15:     #A6B0A0

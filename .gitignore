@@ -1,0 +1,14 @@
+# README
+README.pdf
+
+# ncspot
+ncspot/.config/ncspot/userstate.toml
+ncspot/.config/ncspot/userstate.cbor
+
+# Zathura
+zathura/.config/zathura/zathurarc.backup
+
+# ZSH
+.zcompdump
+zsh/.config/zsh/.zcompdump
+zsh/.config/zsh/.zcompcache/

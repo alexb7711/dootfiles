@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Create the config directory if it does not exist
-[ ! -d "~/.config/" ] && mkdir -p "~/.config"
+[ ! -d "$HOME/.config/" ] && mkdir -p "$HOME/.config"
 
 # Define list of folders to 
-conf_list=$(find . -maxdepth 1 -type d -not -name "." -not -name ".git")
+conf_list=($(find . -maxdepth 1 -type d -not -name "." -not -name ".git"))
 
 for x in "${conf_list[@]}"; do
-	stow -t ~/ ${x}
+	stow -t ~/ ${x:2}
 done
 
 

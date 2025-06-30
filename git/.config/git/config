@@ -8,7 +8,8 @@
 	email = alex.brown7711@gmail.com
 [core]
 	editor   = vim
-        autocrlf = true # Auto-convert correct line endings
+	autocrlf = input # Auto-convert correct line endings
+	eol = lf
         whitespace = error # Complain if trying to commit only white space
         preloadindex = true # Load index into memory
 [advice]

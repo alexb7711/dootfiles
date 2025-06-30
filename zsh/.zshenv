@@ -18,23 +18,26 @@ export SUDO_ASKPASS="$HOME/code/scripts/dmenu/dmenupass"
 
 # ~/ Clean Up
 
-export CARGO_HOME="$HOME/.local/cargo"
-export CUDA_CACHE_PATH="$HOME/.cache/nv"
-export GNUPGHOME="$HOME/.local/share/.gnupg"
-export HISTFILE="$XDG_DATA_HOME"/zsh/history
-export LESSHISTFILE="-"
-export MATLAB_LOG_DIR="/tmp"
-export NOTMUCH_CONFIG="$HOME/.config/notmuch/notmuchrc"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+
+export XINITRC="$XDG_CONFIG_HOME/x11/xinitrc"
+
+export CARGO_HOME="$XDG_DATA_HOME/cargo"
+# export CUDA_CACHE_PATH="$HOME/.cache/nv"
+# export GNUPGHOME="$XDG_DATA_HOME/.gnupg"
+export NOTMUCH_CONFIG="$XDG_CONFIG_HOME/notmuch/notmuchrc"
 export NPM_CONFIG_USERCONFIG="$HOME/.config/npm/npmrc"
 export PASSWORD_STORE_DIR="$HOME/.local/share/password-store"
 export RUSTUP_HOME="$HOME/.local/share/rustup"
 export SSB_HOME="$XDG_DATA_HOME/zoom"
 export TERMINFO="$XDG_DATA_HOME/terminfo"
 export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:/usr/share/terminfo"
-export XMONAD_CACHE_HOME="$HOME/.config/xmonad/"
-export XMONAD_CONFIG_HOME="$HOME/.config/xmonad/"
-export XMONAD_DATA_HOME="$HOME/.config/xmonad/"
-export ZDOTDIR="$HOME/.config/zsh/"
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh/"
+
+export LESSHISTFILE="-"
+
 export _JAVA_AWT_WM_NONREPARENTING=1 # <-- So matlab will load
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot=$HOME/.config/java
 

@@ -1,44 +1,23 @@
 #!/bin/sh
 
-# Hide X session files
-USERXSESSION="$XDG_CACHE_HOME/x11/xsession"
-USERXSESSIONRC="$XDG_CACHE_HOME/x11/xsessionrc"
-ALTUSERXSESSION="$XDG_CACHE_HOME/x11/Xsession"
-ERRFILE="$XDG_CACHE_HOME/x11/xsession-errors"
-
 # Startup Applications
-## Ensure Xresources is read before window manager starts
-xrdb -merge ~/.Xresources
+
+# xinitrc runs automatically when you run startx.
+
+# There are some small but important commands that need to be run when we start
+# the graphical environment. There is a link to this file in ~/.xprofile
+# because that file is run automatically if someone uses a display manager
+# (login screen) and so they are needed there. To prevent doubling up commands,
+# I source them here with the line below.
+
+if [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/x11/xprofile" ]; then
+	. "${XDG_CONFIG_HOME:-$HOME/.config}/x11/xprofile"
+else
+	. "$HOME/.xprofile"
+fi
 
 ## If the device is a laptop and `Xmodmap` if Xmodmap exists load it
 [ "$(hostnamectl chassis)" = "laptop" ] && [ -e ~/.Xmodmap ] && xmodmap ~/.Xmodmap
-
-## Set up monitor resolutions and positions
-command -v monitorSwapper && monitorSwapper; monitorSwapper
-
-## Set a random wallpaper
-command -v setWallpaper && setWallpaper
-
-## Set up blur/transparency
-command -v picom && picom -c -l0 -t0 -r0 -o.00 &
-
-## Hide mouse cursor when it is not being used
-command -v unclutter && unclutter &
-
-## Enable davmail
-# command -v davmail && davmail   &
-
-## Enable desktop notifications
-command -v dunst && dunst     &
-
-## Auto-start applications
-# command -v dex && dex -a
-
-## Start nextcloud daemon
-# command -v nextcloud && nextcloud --background
-
-## Enable dwm status bar code
-dwmblocks 2>&1 >/dev/null &
 
 ## When using a your dumb keyboard can't change key maps
 ## Note that this also runs 'xmodmap ~/.Xmodmap'

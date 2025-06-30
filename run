@@ -7,8 +7,7 @@
 conf_list=$(find . -maxdepth 1 -type d -not -name "." -not -name ".git")
 
 for x in "${conf_list[@]}"; do
-	#stow -t ~/ 
-	echo $x
+	stow -t ~/ ${x}
 done
 
 

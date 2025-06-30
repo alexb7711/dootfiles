@@ -15,6 +15,12 @@ setopt autocd                                                                   
 setopt autopushd                                                                # Auto pushd
 bindkey -e                                                                      # Emacs Keys
 
+# History
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE="${HOME}/.cache/zsh/history"
+setopt inc_append_history
+
 #===============================================================================#
 # FILES TO SOURCE
 #===============================================================================#
@@ -39,10 +45,6 @@ precmd_functions+=( precmd_vcs_info )
 setopt prompt_subst
 RPROMPT=\$vcs_info_msg_0_
 zstyle ':vcs_info:git:*' formats "(%b)"
-
-# History in cache directory:
-HISTSIZE=100
-SAVEHIST=100
 
 # Basic auto/tab complete:
 autoload -U compinit

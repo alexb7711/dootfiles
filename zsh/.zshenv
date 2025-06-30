@@ -42,4 +42,4 @@ export _JAVA_AWT_WM_NONREPARENTING=1 # <-- So matlab will load
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot=$HOME/.config/java
 
 # Execute X if it is not running
-[ -n $DISPLAY ] && startx
+[ -n $DISPLAY ] && startx ${XINITRC}

@@ -17,7 +17,7 @@ else
 fi
 
 ## If the device is a laptop and `Xmodmap` if Xmodmap exists load it
-[ "$(hostnamectl chassis)" = "laptop" ] && [ -e ~/.Xmodmap ] && xmodmap ~/.Xmodmap
+[ "$(hostnamectl chassis)" = "laptop" ] && [ -e $HOME/.config/x11/xmodmap ] && xmodmap $HOME/.config/x11/xmodmap 
 
 ## When using a your dumb keyboard can't change key maps
 ## Note that this also runs 'xmodmap ~/.Xmodmap'

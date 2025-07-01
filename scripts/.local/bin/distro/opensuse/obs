@@ -1,0 +1,3 @@
+#!/bin/sh
+
+[ ! -z $(command -v flatpak) ] && flatpak run com.obsproject.Studio

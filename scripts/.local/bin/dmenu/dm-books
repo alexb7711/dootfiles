@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Gather up common PDF viewers
+reader=()
+[ ! -z "$(command -v zathura)" ] && reader+=('zathura')
+[ ! -z "$(command -v okular)" ]  && reader+=('okular')
+[ ! -z "$(command -v evince)" ]  && reader+=('evince')
+[ ! -z "$(command -v masterpdfeditor5)" ]  && reader+=('masterpdfeditor5')
+
+# Default path to books
+path=~/Documents/library
+
+# List books
+books=$(
+        find ${path} -type f -name "*.pdf" -o -name "*.djvu" |
+        xargs -I {} basename -a "{}"
+)
+
+# Book selction
+b=$(echo "$books" | dmenu -l 20 -p "Book: ")
+
+# Reader selection
+if [ "${#reader[@]}" -gt 1 ]
+then
+        [ ! -z "${b}" ] && r=$(printf "%s\n" ${reader[@]} | dmenu -l 2 -p "Reader: ")
+else
+        r=${reader}
+fi
+
+# Get the full path of the book
+b=$(find ${path} -type f -name "$b")
+
+# Open book in PDF reader
+[ ! -z "$b" ] && $r "$b"

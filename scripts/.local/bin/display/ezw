@@ -1,0 +1,28 @@
+#!/bin/sh
+
+################################################################################
+# Description: Easy Watch (ezw)
+# Copy the link from clipboard and start playing the video with MPV
+#
+# Dependencies
+# - xclip
+################################################################################
+
+# Ensure `xclip' is installed
+if ! command -v xclip &> /dev/null
+then
+    echo "xclip could not be found"
+    exit
+fi
+
+# Variables
+string=$(xclip -selection clipboard -o)
+
+# Verify string
+case "$string" in
+    https://*)
+        mpv "$string"
+        ;;
+    *)
+        echo "Unrecognized format"
+esac

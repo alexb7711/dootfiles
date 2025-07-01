@@ -1,0 +1,9 @@
+#!/bin/sh
+LIBRARY=~/Documents/library
+PDFVIEWER=zathura
+
+SELECTION=$(ls $LIBRARY | dmenu -p "Library: ")
+
+echo "$LIBRARY/$SELECTION"
+
+zathura "$LIBRARY/$SELECTION"

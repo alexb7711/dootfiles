@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Update PATH
-[ -d "$HOME/code/scripts/" ] && \
-        SCRIPT_DIR=$(find $HOME/code/scripts -name ".git" -prune -o -type d -print) && \
+[ -d "$HOME/.local/bin" ] && \
+        SCRIPT_DIR=$(find -L $HOME/.local/bin -name ".git" -prune -o -type d -print) && \
         export PATH="$PATH:${SCRIPT_DIR//$'\n'/:}" 
 PATH=$PATH:$HOME/.local/bin
 
@@ -23,6 +23,9 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 
 export XINITRC="$XDG_CONFIG_HOME/x11/xinitrc"
+
+[ -d "$XDG_CONFIG_HOME/x11" ] && mkdir -p "$XDG_CONFIG_HOME/x11"
+export XAUTHORITY="$XDG_CONFIG_HOME/x11/xauthority"
 
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 # export CUDA_CACHE_PATH="$HOME/.cache/nv"

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+gpg --full-generate-key
+pass init

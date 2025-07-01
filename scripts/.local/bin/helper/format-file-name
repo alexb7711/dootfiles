@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Input
+[ "$#" -ge 1 ] && extension=$1
+[ "$#" -ge 2 ] && depth=$2 || depth=1
+
+if [ "$#" -ge 1 ]
+then
+    for f in *.$extension
+	do
+	    mv -v "$f" "`echo $f | sed -e "s/[ _]/-/g"`"                        # _ to -
+            # mv -v "$f" "`echo $f | sed -e "s/([A-Z])([a-z0-9])/-\L\1\2/g"`"     # Snake/Camel Case #
+            mv -v "$f" "`echo $f | sed -e "s/\([A-Z]\)/\L\1/g"`"                # Lowercase
+            mv -v "$f" "$(tr '[:upper:]' '[:lower:]' <<< "$f" )"
+	done
+else
+	echo "ERROR: Invalid arguments"
+	echo "\$1 - File extension to process on"
+fi

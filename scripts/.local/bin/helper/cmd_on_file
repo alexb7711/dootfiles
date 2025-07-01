@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Reference:
+# https://www.diskinternals.com/linux-reader/bash-loop-through-files-in-directory/
+
+if [ "$#" -ge 2 ]
+then
+	FILE=$1
+	CMD=$2
+	EXTENSION="*"
+
+	# If an extension is included
+	if [ "$#" -ge 3 ]
+	then
+		EXTENSION=$3
+	fi
+
+	for f in $FILE/*.$EXTENSION
+	do
+		echo "Processing $f ..."
+		$CMD $f
+	done
+else
+	echo "ERROR: Invalid arguments"
+	echo "cmd_on_file FILE CMD"
+	echo "FILE - Directory for command to be ran"
+	echo "CMD  - Command to run on files"
+fi

@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# Ensure script is ran as root
+if [ $(/usr/bin/id -u) -ne 0 ]
+then
+    echo "Please run as root"
+    exit
+fi
+
+#================================================================================
+# Configure pacman
+#================================================================================
+pacman_conf="/etc/pacman.conf"
+
+# Install pv
+pacman -Sy pv
+
+pv "$pacman_conf" | sed 's/#Color/Color/'                        | tee $pacman_conf > /dev/null
+pv "$pacman_conf" | sed 's/#ParallelDownload/ParallelDownloads/' | tee $pacman_conf > /dev/null
+pv "$pacman_conf" | sed '/^#\[community]/{N;s/\n#/\n/}'          | tee $pacman_conf > /dev/null
+pv "$pacman_conf" | sed 's/#\[community]/\[community]/g'         | tee $pacman_conf > /dev/null
+pv "$pacman_conf" | sed '/^#\[extra]/{N;s/\n#/\n/}'              | tee $pacman_conf > /dev/null
+pv "$pacman_conf" | sed 's/#\[extra]/\[extra]/g'                 | tee $pacman_conf > /dev/null
+pv "$pacman_conf" | sed '/^#\[multilib]/{N;s/\n#/\n/}'           | tee $pacman_conf > /dev/null
+pv "$pacman_conf" | sed 's/#\[multilib]/\[multilib]/g'           | tee $pacman_conf > /dev/null
+
+#================================================================================
+# Install Packages
+#================================================================================
+
+# Configure yay
+echo "Installing yay"
+pacman -Sy git base-devel
+git clone https://aur.archlinux.org/yay.git
+cd yay && makepkg -si && rm -rfv yay
+
+# Update really quick
+echo "Updating"
+yay -Syu
+
+# Install packages
+packages="./packages.txt"
+yay -Syu $(cat $packages)
+
+#================================================================================
+# Configure Users
+#================================================================================
+useradd -m -s /bin/zsh alex

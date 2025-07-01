@@ -1,0 +1,437 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import string
+from string import Template
+
+#===============================================================================
+header_file_template = """///
+/// @file $FILE_PATH/${CLASS_NAME}.h
+///
+/// This file contains the ${CLASS_NAME} class $FILE_TYPE.
+///
+
+#ifndef ${HEADER_GUARD}
+#define ${HEADER_GUARD}
+
+${NAMESPACE_BEGIN}
+
+/// class description.
+class ${CLASS_NAME}
+{
+public:
+  /// Creates an object.
+  /// 
+  /// @return  Pointer to the object if successful; Otherwise nullptr
+  static ${CLASS_NAME}* create();
+
+  /// Destroy an object.
+  /// 
+  /// @param[in] p_obj   Pointer to object
+  static void destroy(${CLASS_NAME}*& p_obj);
+
+  /// Constructor.
+  ${CLASS_NAME}();
+
+  ///Destructor.
+  virtual ~${CLASS_NAME}();
+
+  /// Checks if the object has been initialized.
+  ///
+  /// @return true if the object is initialized.
+  bool is_initialized();
+
+private:
+  struct ${CLASS_NAME}_impl;    // Private struct
+  ${CLASS_NAME}_impl* mp_impl;  // Pointer to private struct
+
+  /// Disallow the copy constructor.
+  ${CLASS_NAME}(const ${CLASS_NAME}&) = delete;
+
+  /// Disallow the assignment operator.
+  ${CLASS_NAME}& operator=(const ${CLASS_NAME}&) = delete;
+};
+
+${NAMESPACE_END}
+
+#endif // ${HEADER_GUARD}
+"""
+
+#===============================================================================
+impl_file_template = """///
+/// @file ${FILE_PATH}/${CLASS_NAME}.cpp
+///
+/// This file contains the ${CLASS_NAME} class $FILE_TYPE.
+///
+
+#include <new>
+#include <${FILE_PATH}/${CLASS_NAME}.h>
+
+${NAMESPACE_BEGIN}
+
+struct ${CLASS_NAME}::${CLASS_NAME}_impl
+{
+  bool m_initialized;
+
+  ${CLASS_NAME}_impl()
+    : m_initialized(false)
+  {}
+};
+
+${METHOD_SEPARATOR}
+${CLASS_NAME}* ${CLASS_NAME}::create()
+{
+  ${CLASS_NAME}* p_obj = new(std::nothrow) ${CLASS_NAME};
+
+  if ((p_obj != nullptr) && (!p_obj->is_initialized()))
+  {
+    delete p_obj;
+    p_obj = nullptr;
+  }
+
+  return p_obj;
+}
+
+${METHOD_SEPARATOR}
+void ${CLASS_NAME}::destroy(${CLASS_NAME}*& p_obj)
+{
+  delete p_obj;
+  p_obj = nullptr;
+}
+
+${METHOD_SEPARATOR}
+${CLASS_NAME}::${CLASS_NAME}()
+  : mp_impl(new ${CLASS_NAME}_impl)
+{
+}
+
+${METHOD_SEPARATOR}
+${CLASS_NAME}::~${CLASS_NAME}()
+{
+  delete mp_impl;
+}
+
+${METHOD_SEPARATOR}
+bool ${CLASS_NAME}::is_initialized()
+{
+  return (mp_impl != 0) && (mp_impl->m_initialized);
+}
+
+${NAMESPACE_END}
+"""
+
+#===============================================================================
+interface_file_template = """///
+/// @file ${FILE_PATH}/${CLASS_NAME}.h
+///
+/// This file contains the ${CLASS_NAME} class $FILE_TYPE.
+///
+
+#ifndef $HEADER_GUARD
+#define $HEADER_GUARD
+
+${NAMESPACE_BEGIN}
+
+/// Interface class description.
+class ${CLASS_NAME}
+{
+public:
+  /// Object destructor.
+  virtual ~${CLASS_NAME}() {}
+
+  /// Method description
+  virtual method() = 0;
+};
+
+${NAMESPACE_END}
+
+#endif // $HEADER_GUARD
+"""
+
+#===============================================================================
+test_file_template = """///
+///
+/// @file ${FILE_PATH}/${CLASS_NAME}.cpp
+///
+/// This file contains the ${CLASS_TESTED} class tests.
+///
+
+// this is a preprocessor test to ensure that the object cannot be included
+// twice.
+#include <${FILE_PATH}/${CLASS_TESTED}.h>
+
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <${FILE_PATH}/${CLASS_TESTED}.h>
+
+using ::testing::_; // allow the "anything goes" character in GMock
+
+${NAMESPACE_BEGIN}
+
+${METHOD_SEPARATOR}
+TEST(${CLASS_INST_TEST}, Stack)
+{
+  // create on stack
+  // ${CLASS_TESTED} object;
+}
+
+${METHOD_SEPARATOR}
+TEST(${CLASS_INST_TEST}, Heap)
+{
+  // create in the heap
+  // ${CLASS_TESTED}* p_object = new ${CLASS_TESTED};
+  // ${CLASS_TESTED}* p_object = ${CLASS_TESTED}::create();
+  // ASSERT_TRUE(p_object != nullptr);
+  // delete p_object;
+}
+
+${METHOD_SEPARATOR}
+// The fixture for testing class ${CLASS_TESTED}.
+class ${CLASS_NAME} : public ::testing::Test
+{
+protected:
+  // You can remove any or all of the following functions if its body
+  // is empty.
+  ${CLASS_NAME}()
+  {
+    // You can do set-up work for each test here.
+  }
+  virtual ~${CLASS_NAME}()
+  {
+    // You can do clean-up work that doesn't throw exceptions here.
+  }
+
+  // If the constructor and destructor are not enough for setting up
+  // and cleaning up each test, you can define the following methods:
+  // This routine is called before running any tests, not before each test
+  static void SetUpTestCase()
+  {
+    // Google Mock will print errors only (least verbose).
+    // ::testing::FLAGS_gmock_verbose = "error";
+  }
+
+  // This routine is called after running all tests, not after each test
+  static void TearDownTestCase()
+  {
+  }
+
+  virtual void SetUp()
+  {
+    // Code here will be called immediately after the constructor (right
+    // before each test).
+  }
+
+  virtual void TearDown()
+  {
+    // Code here will be called immediately after each test (right
+    // before the destructor).
+  }
+
+  // Objects declared here can be used by all tests in the test case for ${CLASS_TESTED}.
+  ${CLASS_TESTED} ${CLASS_VAR};
+};
+
+${METHOD_SEPARATOR}
+TEST_F(${CLASS_NAME}, SomeTest)
+{
+  // Exercises a feature of ${CLASS_TESTED}.;
+}
+
+${NAMESPACE_END}
+"""
+
+#===============================================================================
+class CodeGeneratorBackend:
+  #-----------------------------------------------------------------------------
+  def begin(self, tab='  '):
+    self.code = []
+    self.tab = tab
+    self.level = 0
+
+  #-----------------------------------------------------------------------------
+  def end(self):
+    return "".join(self.code)
+
+  #-----------------------------------------------------------------------------
+  def write(self, string):
+    self.code.append(self.tab * self.level + string)
+
+  #-----------------------------------------------------------------------------
+  def writeln(self, string=''):
+    if len(string) > 0:
+      self.code.append(self.tab * self.level + string)
+    self.code.append('\n')
+
+  #-----------------------------------------------------------------------------
+  def indent(self):
+    self.level = self.level + 1
+
+  #-----------------------------------------------------------------------------
+  def dedent(self):
+    if self.level == 0:
+      raise MyCustomError("internal error in code generator")
+    self.level = self.level - 1
+
+#===============================================================================
+class CodeGenerator():
+  #-----------------------------------------------------------------------------
+  def __init__(self, class_def, dest):
+    self.namespaces = class_def.split('::')
+
+    # extract class name
+    self.class_name = self.namespaces[-1]
+    self.namespaces.pop() # remove class name from namespaces
+
+    # construct paths
+    self.path = os.getcwd() if not dest else dest
+
+    self.relative_path = ''
+    if 'stdout' != self.path:
+      self.relative_path = os.path.relpath(self.path, 'src')
+
+  #-----------------------------------------------------------------------------
+  def _output(self, path, file, code):
+    if path == 'stdout':
+      print(code)
+    else:
+      if not os.path.exists(path):
+        os.makedirs(path) 
+      with open(os.path.join(path,file), 'w') as file:
+        file.write(code)
+
+  #-----------------------------------------------------------------------------
+  def _namespace_begin(self):
+    backend = CodeGeneratorBackend()
+    backend.begin()
+    if len(self.namespaces) > 0:
+      for namespace in self.namespaces:
+        backend.writeln('namespace '+namespace)
+        backend.writeln('{')
+      backend.code.pop()
+    return backend.end()
+
+  #-----------------------------------------------------------------------------
+  def _namespace_end(self):
+    backend = CodeGeneratorBackend()
+    backend.begin()
+    if len(self.namespaces) > 0:
+      for namespace in reversed(self.namespaces):
+        backend.writeln('} // namespace '+namespace)
+      backend.code.pop()
+    return backend.end()
+
+  #-----------------------------------------------------------------------------
+  def _header_guard(self):
+    backend = CodeGeneratorBackend()
+    backend.begin()
+    if len(self.namespaces) > 0:
+      backend.write('_'.join(self.namespaces).upper())
+      backend.write('_')
+    backend.write(self.class_name.upper()+'_H')
+    return backend.end()
+
+  #-----------------------------------------------------------------------------
+  def _method_separator(self, separator='=', length=78):
+    return '//'+(separator * length)
+
+  #-----------------------------------------------------------------------------
+  def _remove_namespaces(self, template):
+    template = template.replace('${NAMESPACE_BEGIN}\n\n','')
+    return template.replace('${NAMESPACE_END}\n\n','')
+
+  #-----------------------------------------------------------------------------
+  def _create_test_file(self, class_template):
+    file = self.class_name+'.cpp'
+    class_tested = self.class_name.replace('_test','')
+    class_inst_test = self.class_name.replace('_test','_inst_test')
+
+    if not self.namespaces:
+      class_template = self._remove_namespaces(class_template)
+
+    tmpl = Template(class_template)
+    code = tmpl.substitute(CLASS_NAME=self.class_name,
+                           CLASS_TESTED=class_tested,
+                           CLASS_INST_TEST=class_inst_test,
+                           FILE_PATH=self.relative_path,
+                           METHOD_SEPARATOR=self._method_separator(),
+                           CLASS_VAR = 'm_'+class_tested,
+                           NAMESPACE_BEGIN=self._namespace_begin(),
+                           NAMESPACE_END=self._namespace_end())
+    self._output(self.path, file, code)
+
+  #-----------------------------------------------------------------------------
+  def _create_interface_file(self, class_template):
+    file = self.class_name+'.h'
+
+    if not self.namespaces:
+      class_template = self._remove_namespaces(class_template)
+
+    tmpl = Template(class_template)
+    code = tmpl.substitute(CLASS_NAME=self.class_name,
+                           FILE_PATH=self.relative_path,
+                           FILE_TYPE='definition',
+                           HEADER_GUARD=self._header_guard(),
+                           NAMESPACE_BEGIN=self._namespace_begin(),
+                           NAMESPACE_END=self._namespace_end())
+    self._output(self.path, file, code)
+
+  #-----------------------------------------------------------------------------
+  def _create_h_file(self, class_template):
+    file = self.class_name+'.h'
+
+    if not self.namespaces:
+      class_template = self._remove_namespaces(class_template)
+
+    tmpl = Template(class_template)
+    code = tmpl.substitute(CLASS_NAME=self.class_name,
+                           FILE_PATH=self.relative_path,
+                           FILE_TYPE='definition',
+                           HEADER_GUARD=self._header_guard(),
+                           NAMESPACE_BEGIN=self._namespace_begin(),
+                           NAMESPACE_END=self._namespace_end())
+    self._output(self.path, file, code)
+
+  #-----------------------------------------------------------------------------
+  def _create_cpp_file(self, class_template):
+    file = self.class_name+'.cpp'
+    file_path = os.path.join(self.relative_path, file)
+
+    if not self.namespaces:
+      class_template = self._remove_namespaces(class_template)
+
+    tmpl = Template(class_template)
+    code = tmpl.substitute(CLASS_NAME=self.class_name,
+                           FILE_PATH=self.relative_path,
+                           FILE_TYPE='implementation',
+                           METHOD_SEPARATOR=self._method_separator(),
+                           NAMESPACE_BEGIN=self._namespace_begin(),
+                           NAMESPACE_END=self._namespace_end())
+    self._output(self.path, file, code)
+
+  #-----------------------------------------------------------------------------
+  def generate_code(self):
+    if self.class_name.endswith('_test'):
+      self._create_test_file(test_file_template)
+    elif self.class_name.startswith('I_'):
+      self.class_name = self.class_name.replace('I_','I')
+      self._create_interface_file(interface_file_template)
+    elif self.class_name.endswith('.h'):
+      self.class_name = self.class_name.replace('.h','')
+      self._create_h_file(header_file_template)
+    elif self.class_name.endswith('.cpp'):
+      self.class_name = self.class_name.replace('.cpp','')
+      self._create_cpp_file(impl_file_template)
+    else:
+      self._create_h_file(header_file_template)
+      self._create_cpp_file(impl_file_template)
+
+#===============================================================================
+if __name__ == "__main__":
+  if len(sys.argv) > 1:
+    cg = CodeGenerator(sys.argv[1], sys.argv[2])
+    cg.generate_code()
+  else:
+    print('Usage:\n' \
+          ' genclass [<namespaces>::][I_]<class_name>[_test]' \
+          ' [<output_path> | stdout]')

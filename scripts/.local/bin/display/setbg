@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Default Wallpaper Locations
+background_d=(
+    "/usr/share/backgrounds"
+    "/usr/share/wallpapers"
+)
+
+# For each directory in the list
+for dir in $(shuf -e "${background_d[@]}")
+do
+    # If the directory exists
+    if [ -d "$dir" ]
+    then
+	      image=$(find ${dir} -type f \( -name "*.png" -o -name "*.jpg" \) | shuf -n 1)
+	      xwallpaper --zoom "${image}"
+        exit 0
+    fi
+done

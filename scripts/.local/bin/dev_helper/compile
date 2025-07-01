@@ -1,0 +1,18 @@
+#!/bin/sh
+
+file=$(readlink -f "$1")
+dir=$(dirname "$file")
+base="${file%.*}"
+shebang=$(sed -n 1p "$file")
+
+cd "$dir" || exit
+
+case "$file" in
+    *.ms) groff -ms "$file" > "$base".ps;;
+    *.md) pandoc --citeproc --number-sections --pdf-engine=xelatex -F pandoc-include-code --listings --verbose "$file" -o "$base".pdf;;
+    *.markdown) pandoc -t beamer --pdf-engine=xelatex --verbose --listings "$file" -o "$base".pdf;;
+    *.tex) latexmk -pdf $file;;
+    *.puml) plantuml -tutxt "$file"
+            plantuml -tpng "$file"
+	    ;;
+esac

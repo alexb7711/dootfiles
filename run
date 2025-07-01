@@ -6,8 +6,10 @@
 # Define list of folders to 
 conf_list=($(find . -maxdepth 1 -type d -not -name "." -not -name ".git"))
 
+[ ! -z $1 ] && flag=$1 || flag=""
+
 for x in "${conf_list[@]}"; do
-	stow -t ~/ ${x:2}
+	stow $flag -t ~/ ${x:2}
 done
 
 

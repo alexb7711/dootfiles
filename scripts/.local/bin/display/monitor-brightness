@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Auto Audio Switcher
+# Author: Alexander Brown
+# v0.1
+
+incr=5
+
+if [ "$1" = "up" ]
+then
+	light -A ${incr}
+elif [ "$1" = "down" ]
+then
+	light -U ${incr}
+fi

@@ -1,0 +1,129 @@
+#!/bin/bash
+
+##===============================================================================
+# GLOBAL VARS
+##===============================================================================
+SESSION_PATH=$HOME/.cache/bw_cache
+bw_exists=`command -v bw`
+
+##===============================================================================
+# FUNCTIONS
+##===============================================================================
+create_session() {
+	[ ! -f "$SESSION_PATH" ] && bw unlock | grep "export BW_SESSION" | cut -d'"' -f 2 > ${SESSION_PATH}
+}
+
+get_selection() {
+	declare -n SESSION=$1
+	declare -n SELECTION=$2
+
+	if [ -n "$bw_exists" ]
+	then
+		# Check if SESSION exists
+		if [ ! -f $SESSION_PATH ]
+		then
+			## If the SESSION file does not exist, create it
+			create_session
+		elif [ ! -s $SESSION_PATH ]
+		then
+			## If the SESSION file exists, but is empty
+			rm ${SESSION_PATH}
+			create_session
+		fi
+
+		# Load the SESSION file
+		SESSION=`cat $SESSION_PATH`
+
+		# Parse out the item names
+		name_list=$(bw list items --session "${SESSION}" --pretty | grep -w name | cut -c14- | sed 's/"//' | sed 's/,//' )
+
+		# Get SELECTION
+		SELECTION=$(echo "$name_list" | dmenu -p "Select Login: ")
+	fi
+}
+
+get_session() {
+	declare -n SESSION=$1
+
+	# Check if SESSION exists
+	if [ ! -f $SESSION_PATH ]
+	then
+		## If the SESSION file does not exist, create it
+		create_session
+	elif [ ! -s $SESSION_PATH ]
+	then
+		## If the SESSION file exists, but is empty
+		rm ${SESSION_PATH}
+		create_session
+	fi
+
+	# Load the SESSION file
+	SESSION=`cat $SESSION_PATH`
+}
+
+##===============================================================================
+# SCRIPT
+##===============================================================================
+for arg in "$@"
+do
+	case $arg in
+		"-a")
+			get_session MYSESSION
+
+			echo "What is the name of the website"
+			read NAME
+			echo "What is the url?"
+			read URL
+			echo "What is the username"
+			read USR
+			echo "Generating password..."
+			PSWD=`pass generate 25`
+
+			echo "TODO: Figure out querey"
+
+			# bw --session $MYSESSION get template item | jq ".name=\"$NAME" | .login=$(bw get template item.login | jq '.username="${USR}" | .password="${PSWD}"')" | bw encode | bw create item
+			;;
+
+		"-c")
+			echo "Input server name: "
+			read SERVER
+			bw config server $SERVER
+			;;
+		"-h")
+			echo "This is the help menu"
+			;;
+		"-i")
+			echo "Email: "
+			read email
+			echo "Password: "
+			read password
+			bw login $email $password
+			;;
+		"-l")
+			echo "Locking Bitwarden..."
+			rm $SESSION_PATH
+			bw lock
+			;;
+		"-p")
+			get_selection MYSESSION MYSELECTION
+			bw --session $MYSESSION get password "$MYSELECTION" | xclip
+			xclip -o | xclip -sel clip
+			;;
+		"-r")
+			rm $SESSION_PATH
+			;;
+		"-u")
+			get_selection MYSESSION MYSELECTION
+			bw --session $MYSESSION get username "$MYSELECTION" | xclip
+			xclip -o | xclip -sel clip
+			;;
+		"-s")
+			get_session MYSESSION
+			bw sync --session $MYSESSION
+			;;
+		*)
+			echo "Invalid argument"
+			;;
+	esac
+done
+

@@ -24,7 +24,6 @@ setopt inc_append_history
 #===============================================================================#
 # FILES TO SOURCE
 #===============================================================================#
-[ -e "$HOME/.config/shortcutrc" ]        && source "$HOME/.config/shortcutrc"
 [ -e "$HOME/.config/aliasrc" ]           && source "$HOME/.config/aliasrc"
 [ -e "$HOME/.config/work_cfg" ]          && source "$HOME/.config/work_cfg"
 

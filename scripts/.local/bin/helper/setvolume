@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Auto Audio Switcher
+# Author: Alexander Brown
+# v2.0
+
+source="@DEFAULT_AUDIO_SINK@"
+
+if [ "$1" = "up" ]; then
+	wpctl set-volume $source 5%+
+elif [ "$1" = "down" ]; then
+	wpctl set-volume $source 5%-
+elif [ "$1" = "mute" ]; then
+	wpctl set-mute $source toggle
+else
+	echo "Error: Not a valid input"
+fi

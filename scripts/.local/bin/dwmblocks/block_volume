@@ -1,14 +1,4 @@
 #!/bin/sh
-
-getdefaultsinkname() {
-    pacmd stat | awk -F": " '/^Default sink name: /{print $2}'
-}
-
-getdefaultsinkvol() {
-    pacmd list-sinks |
-        awk '/^\s+name: /{indefault = $2 == "<'$(getdefaultsinkname)'>"}
-            /^\s+volume: / && indefault {print $5; exit}'
-
-}
-
-getdefaultsinkvol
+volume_percent=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -d':' -f2)
+result=$(echo "100.0 * $volume_percent" | bc)
+echo ${result%%.*}

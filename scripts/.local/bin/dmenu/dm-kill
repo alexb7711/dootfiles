@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Script name: dm-kill
 # Description: Search for a process to kill.

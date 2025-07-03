@@ -16,6 +16,9 @@ else
 	. "$HOME/.xprofile"
 fi
 
+# Activate dbus variables
+dbus-update-activation-environment --all
+
 ## If the device is a laptop and `Xmodmap` if Xmodmap exists load it
 [ "$(hostnamectl chassis)" = "laptop" ] && [ -e $HOME/.config/x11/xmodmap ] && xmodmap $HOME/.config/x11/xmodmap 
 

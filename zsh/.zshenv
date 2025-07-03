@@ -24,8 +24,11 @@ export XDG_DATA_HOME="$HOME/.local/share"
 
 export XINITRC="$XDG_CONFIG_HOME/x11/xinitrc"
 
-[ -d "$XDG_CONFIG_HOME/x11" ] && mkdir -p "$XDG_CONFIG_HOME/x11"
-export XAUTHORITY="$XDG_CONFIG_HOME/x11/xauthority"
+[ ! -d "$XDG_CACHE_HOME/x11" ] && mkdir -p "$XDG_CACHE_HOME/x11"
+export XAUTHORITY="$XDG_CACHE_HOME/x11/xauthority"
+
+export SNAP_USER_DATA="$XDG_CONFIG_HOME/snap/"
+export SNAP_USER_COMMON="$XDG_CONFIG_HOME/snap/"
 
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 # export CUDA_CACHE_PATH="$HOME/.cache/nv"

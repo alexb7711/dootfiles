@@ -10,6 +10,11 @@
 
 let $MYVIMDIR=expand("<sfile>:p:h")
 
+" Set these paths to ensure everything is loaded properly (i.e. Debian)
+set runtimepath+=$MYVIMDIR
+set runtimepath+=$MYVIMDIR/after
+set packpath+=$MYVIMDIR
+
 "==============================================================================="
 " FUNCTIONS
 "==============================================================================="

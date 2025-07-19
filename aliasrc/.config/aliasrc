@@ -42,3 +42,8 @@ alias weather="curl http://wttr.in"
 alias yt="yt-dlp"
 alias z="zathura"
 alias zshrc="vim ~/.config/zsh/.zshrc"
+
+# Flatpak
+[ ! -z $(command -v flatpak) ] && flatpak list --app | grep -q "FreeCAD" && alias freecad="flatpak run org.freecad.FreeCAD"
+[ ! -z $(command -v flatpak) ] && flatpak list --app | grep -q "ncspot" && alias ncspot="flatpak run io.github.hrkfdn.ncspot"
+[ ! -z $(command -v flatpak) ] && flatpak list --app | grep -q "Minecraft" && alias minecraft="flatpak run com.mojang.Minecraft"

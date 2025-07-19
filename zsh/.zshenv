@@ -32,7 +32,7 @@ export SNAP_USER_COMMON="$XDG_CONFIG_HOME/snap/"
 
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 # export CUDA_CACHE_PATH="$HOME/.cache/nv"
-# export GNUPGHOME="$XDG_DATA_HOME/.gnupg"
+export GNUPGHOME="$XDG_DATA_HOME/.gnupg"
 export NOTMUCH_CONFIG="$XDG_CONFIG_HOME/notmuch/notmuchrc"
 export NPM_CONFIG_USERCONFIG="$HOME/.config/npm/npmrc"
 export PASSWORD_STORE_DIR="$HOME/.local/share/password-store"

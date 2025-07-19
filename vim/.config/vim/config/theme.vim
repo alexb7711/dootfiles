@@ -2,7 +2,7 @@
 "     File Name     : config/theme.vim
 "     Created By    : Alexander
 "     Creation Date : [2025-03-22 19:51]
-"     Last Modified : [2025-06-12 12:19]
+"     Last Modified : [2025-07-19 16:41]
 "     Description   : Configure the theme
 "--------------------------------------------------------------------------------
 
@@ -21,12 +21,12 @@ if &t_Co > 1
 endif
 
 "Color Scheme Settings
-set background=dark
-
 try
   colorscheme elflord
 catch /^Vim\%((\a\+)\)\=:E/
   colorscheme elflord
 endtry
 
-hi cursorline term=bold cterm=bold
+" set background=dark
+hi Normal guibg=NONE ctermbg=NONE
+hi EndOfBuffer guibg=NONE ctermbg=NONE

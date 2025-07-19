@@ -2,10 +2,12 @@
 " Normal Keybindings
 "================================================================================
 
+nnoremap <leader><f1> :call Toggle_transparent()<CR>
+
 "--------------------------------------------------------------------------------
 " Auto Correct Spelling
 autocmd BufEnter,FocusGained,InsertLeave *.md,*.markdown,*.tex nnoremap <silent> <leader><leader> ms[s1z=`s
-autocmd BufEnter,FocusGained,InsertLeave *.puml nnoremap <silent> <leader><leader> :vsplit<CR>:e %:r.utxt<CR>
+autocmd BufEnter,FocusGained,InsertLeave *.puml,*.pml nnoremap <silent> <leader><leader> :vsplit<CR>:e %:r.utxt<CR>
 
 " Shortcuts using <leader>
 map <leader>sn ]s

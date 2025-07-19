@@ -57,3 +57,17 @@ function! WhichEnv() abort
        return toupper(substitute(system('uname'), '\n', '', ''))
     endif
 endfunction
+
+"==============================================================================
+"
+let t:is_transparent = 1 " 1 == transparent; 2 == solid
+function! Toggle_transparent()
+  if t:is_transparent == 0
+    hi Normal guibg=NONE ctermbg=NONE
+    hi EndOfBuffer guibg=NONE ctermbg=NONE
+    let t:is_transparent = 1
+  else
+    set background=dark
+    let t:is_transparent = 0
+  endif
+endfunction

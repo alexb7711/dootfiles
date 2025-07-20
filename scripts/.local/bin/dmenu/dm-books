@@ -8,7 +8,7 @@ reader=()
 [ ! -z "$(command -v masterpdfeditor5)" ]  && reader+=('masterpdfeditor5')
 
 # Default path to books
-path=~/Documents/library
+path="$HOME/Documents/library $HOME/documents/library"
 
 # List books
 books=$(

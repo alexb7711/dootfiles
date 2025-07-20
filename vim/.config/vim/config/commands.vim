@@ -37,9 +37,9 @@ autocmd BufEnter,FocusGained,InsertLeave *.cpp,*.c,*.h,*.hpp,*.vim set nowrap
 " Reload Document when window gains focus
 autocmd FocusGained,BufEnter * :silent! !
 
-" Sets numbering style on the left hand side
-autocmd InsertLeave,BufEnter * setlocal relativenumber | setlocal number
-autocmd InsertEnter * setlocal norelativenumber | setlocal number
+" Sets numbering style on the left hand side for `prog_buf` buffers
+exec "autocmd InsertLeave,BufEnter " . join(g:prog_buf, ",") . " setlocal relativenumber | setlocal number"
+exec "autocmd InsertEnter " . join(g:prog_buf, ",") . " setlocal norelativenumber | setlocal number"
 
 "" Disable for terminal mode
 autocmd TerminalOpen, * set nonumber norelativenumber

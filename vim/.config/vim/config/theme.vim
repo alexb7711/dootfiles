@@ -2,7 +2,7 @@
 "     File Name     : config/theme.vim
 "     Created By    : Alexander
 "     Creation Date : [2025-03-22 19:51]
-"     Last Modified : [2025-07-19 16:41]
+"     Last Modified : [2025-07-20 09:32]
 "     Description   : Configure the theme
 "--------------------------------------------------------------------------------
 
@@ -30,3 +30,4 @@ endtry
 " set background=dark
 hi Normal guibg=NONE ctermbg=NONE
 hi EndOfBuffer guibg=NONE ctermbg=NONE
+hi Terminal guibg=NONE ctermbg=NONE

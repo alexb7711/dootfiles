@@ -1,8 +1,8 @@
-"--------------------------------------------------------------------------------
+"autocmd BufEnter * if &ft == 'help' | setlocal nonumber | endifCopied!   --------------------------------------------------------------------------------
 "     File Name     : project.vim
 "     Created By    : Alexander
 "     Creation Date : [2025-03-22 19:11]
-"     Last Modified : [2025-06-12 11:28]
+"     Last Modified : [2025-07-20 10:24]
 "     Description   : Tools to assist while working in projects
 "--------------------------------------------------------------------------------
 if exists('g:auto_plugin')
@@ -72,6 +72,25 @@ endfunction
 "===============================================================================
 " PUBLIC FUNCTIONS
 "===============================================================================
+"
+"-------------------------------------------------------------------------------
+" Function to list all projects
+function! project#ListProjects(ArgLead, CmdLine, CursorPos)
+  if (WhichEnv() =~# 'WINDOWS')
+    let projects = split(system('Get-ChildItem -Path ' . g:project_dir . ' -Recurse -Directory -Filter "' . a:ArgLead . '*/.git"'), '\n')
+  else
+    let projects = split(system('find ' . g:project_dir . ' -type d -iwholename "*' . a:ArgLead . '*/.git"'), '\n')
+  endif
+
+  echom projects
+
+  let projects_updated = []
+  for p in projects
+    let projects_updated += [substitute(p, '\.git', '', 'g')]
+  endfor
+
+  return projects_updated
+endfunction
 
 "-------------------------------------------------------------------------------
 "
@@ -99,30 +118,13 @@ function! project#CreateTags(ft)
   call system('ctags' . flags . ' -R .')
 endfunction
 
-"-------------------------------------------------------------------------------
-" Function to list all projects
-function! project#ListProjects(ArgLead, CmdLine, CursorPos)
-  if (WhichEnv() =~# 'WINDOWS')
-    let projects = split(system('Get-ChildItem -Path ' . g:project_dir . ' -Recurse -Directory -Filter "' . a:ArgLead . '*/.git"'), '\n')
-  else
-    let projects = split(system('find ' . g:project_dir . ' -type d -iwholename "*' . a:ArgLead . '*/.git"'), '\n')
-  endif
-
-let projects_updated = []
-  for p in projects
-    let projects_updated += [substitute(p, '\.git', '', 'g')]
-  endfor
-
-  return projects_updated
-endfunction
-
 "===============================================================================
 " COMMANDS
 "===============================================================================
 command FindRoot call project#FindProjectRoot()
 command CreateTags call project#CreateTags(&ft)
 
-command! -nargs=1 -bang -complete=custom,project#ListProjects ProjectList edit<bang> <args> | cd <args>
+command! -nargs=1 -bang -complete=customlist,project#ListProjects ProjectList edit<bang> <args> | cd <args>
 command! -nargs=1 -bang -complete=customlist,s:FindFile ProjectSearch find<bang> <args>
 
 "===============================================================================

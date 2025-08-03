@@ -8,8 +8,10 @@
 " VARIABLES
 "===============================================================================
 
-let g:prog_file = ['c','cmake','make','markdown','rust','tex','toml','vim','yaml','cpp','css','html','java','javascript','json','python','xml']
-let g:prog_buf = ['*.c','CMakeLists.txt','makefile','*.md','*.rs','*.tex','*.toml','*.vim','*.yml','*.cpp','*.css','*.html','*.java','*.js','*.json','*.py','*.xml']
+let g:prog_file = ['c', 'cpp','cmake','make','markdown','rust','tex','toml','vim','yaml','cpp','css','html','java','javascript','json','python','xml']
+let g:prog_buf = ['*.c', '*.h', '*.cpp', '*.hpp','CMakeLists.txt','makefile','*.md','*.rs','*.tex','*.toml','*.vim','*.yml','*.cpp','*.css','*.html','*.java','*.js','*.json','*.py','*.xml']
+let g:doc_file = ['markdown', 'promela', 'tex']
+let g:doc_buf = ['*.markdown', '*.md', '.pml', 'tex']
 let g:vim_conf = $MYVIMRC
 
 "===============================================================================

@@ -24,6 +24,9 @@ autocmd Filetype python nnoremap <buffer> <F9> :update<bar>!python %<CR>
 " C/C++
 autocmd Filetype c,h,cpp,hpp nnoremap <buffer> <F9> :make<CR>
 
+" Compile script
+exec "autocmd FileType " . join(g:doc_file, ",") . " nnoremap <buffer> <F9> :!compile \"%:p\"<CR> <pipe> :redraw!<CR>"
+
 "--------------------------------------------------------------------------------
 " Ignore long lines
 noremap j gj

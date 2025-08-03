@@ -12,7 +12,5 @@ case "$file" in
     *.md) pandoc --citeproc --number-sections --pdf-engine=xelatex -F pandoc-include-code --listings --verbose "$file" -o "$base".pdf;;
     *.markdown) pandoc -t beamer --pdf-engine=xelatex --verbose --listings "$file" -o "$base".pdf;;
     *.tex) latexmk -pdf $file;;
-    *.puml) plantuml -tutxt "$file"
-            plantuml -tpng "$file"
-	    ;;
+    *.pml) plantuml -tpng "$file" ;;
 esac

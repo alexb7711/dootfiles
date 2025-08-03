@@ -5,6 +5,15 @@
 "===============================================================================
 
 "===============================================================================
+" Functions
+"===============================================================================
+function PythonFormatBuffer()
+  let cursor_pos = getpos('.')
+  :silent !black -q %
+  call setpos('.', cursor_pos)
+endfunction
+
+"===============================================================================
 " Configuration
 "===============================================================================
 
@@ -37,8 +46,10 @@ setlocal formatprg=black\ -\ -q\ 2>/dev/null
 " Auto-commands
 "===============================================================================
 
-autocmd Filetype python nnoremap <buffer> <F9> :update<bar>!python %<CR>
-augroup black-fmt
+augroup custom_python
     autocmd!
-    autocmd bufwritepre *.py :normal mfgggqG`f
+
+    autocmd bufwritepre *.py :call PythonFormatBuffer()
+
+    autocmd Filetype python nnoremap <buffer> <F9> :update<bar>!python %<CR>
 augroup END

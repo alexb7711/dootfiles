@@ -7,7 +7,7 @@
 PATH=$PATH:$HOME/.local/bin
 
 # Default Programs
-export BROWSER="brave"
+export BROWSER="brave-browser"
 export EDITOR="vim"
 export LANG="en_US.UTF-8"
 export PDF_READER="zathura"

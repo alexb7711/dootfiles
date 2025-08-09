@@ -2,7 +2,7 @@
 "     File Name     : statusline.vim
 "     Created By    : Alexander
 "     Creation Date : [2025-04-02 19:17]
-"     Last Modified : [2025-07-20 12:59]
+"     Last Modified : [2025-08-09 15:10]
 "     Description   : Status line configuration
 "--------------------------------------------------------------------------------
 
@@ -13,12 +13,14 @@
 "-------------------------------------------------------------------------------
 "
 function! StatuslineGit()
-  if (WhichEnv() =~# 'WINDOWS')
-    return '¬'
+  if !exists('b:git_branch')
+    let b:git_branch = ''
+    let status = system('git rev-parse --abbrev-ref HEAD 2>/dev/null')
+    if v:shell_error == 0
+      let b:git_branch = substitute(status, '\n', '', 'g')
+    endif
   endif
-
-  let l:branchname = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-  return strlen(l:branchname) > 0?'  '.l:branchname.' ':'¬'
+  return b:git_branch != '' ? '['.b:git_branch.']' : '¬'
 endfunction
 
 "===============================================================================

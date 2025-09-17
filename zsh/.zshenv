@@ -22,6 +22,8 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 
+[ ! -d "$XDG_CACHE_HOME/zsh" ] && mkdir -p "$XDG_CACHE_HOME/zsh"
+
 export XINITRC="$XDG_CONFIG_HOME/x11/xinitrc"
 
 [ ! -d "$XDG_CACHE_HOME/x11" ] && mkdir -p "$XDG_CACHE_HOME/x11"

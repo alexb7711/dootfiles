@@ -8,7 +8,7 @@ PATH=$PATH:$HOME/.local/bin
 
 # Default Programs
 export BROWSER="brave-browser"
-export EDITOR="vim"
+export EDITOR="nvim"
 export LANG="en_US.UTF-8"
 export PDF_READER="zathura"
 export QT_QPA_PLATFORMTHEME=qt5ct

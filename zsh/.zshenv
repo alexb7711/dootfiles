@@ -46,11 +46,8 @@ export ZDOTDIR="$XDG_CONFIG_HOME/zsh/"
 
 export LESSHISTFILE="-"
 
-export MYVIMRC='~/.config/vim/vimrc'
-export VIMINIT='source $MYVIMRC'
-
 export _JAVA_AWT_WM_NONREPARENTING=1 # <-- So matlab will load
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot=$HOME/.config/java
 
 # Execute X if it is not running
-[ -n $DISPLAY ] && startx ${XINITRC}
+[ ! -z $(command -v startx) ] && startx ${XINITRC}

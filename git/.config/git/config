@@ -7,9 +7,9 @@
 	name = Alexander Brown
 	email = alex.brown7711@gmail.com
 [core]
-	editor   = vim
+	editor   = nvim
 	autocrlf = input # Auto-convert correct line endings
-	eol = lf
+	eol = auta
         whitespace = error # Complain if trying to commit only white space
         preloadindex = true # Load index into memory
 [advice]

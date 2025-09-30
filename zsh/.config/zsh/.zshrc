@@ -85,3 +85,5 @@ autoload -Uz zmv
 
 # Load zsh-syntax-highlighting; should be last.
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
+## TODO: Need to add this to your work config
+. "$HOME/.local/share/../bin/env"

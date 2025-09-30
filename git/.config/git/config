@@ -9,7 +9,7 @@
 [core]
 	editor   = nvim
 	autocrlf = input # Auto-convert correct line endings
-	eol = auta
+	eol = auto
         whitespace = error # Complain if trying to commit only white space
         preloadindex = true # Load index into memory
 [advice]

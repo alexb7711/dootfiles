@@ -20,7 +20,7 @@ alias gl="git log --all --graph --pretty=format:'%C(magenta)%h %(white) %an %ar%
 alias gm="mbsync -c ~/.config/mu4e/mbsyncrc -a"
 alias gp="git pull"
 alias less="/usr/share/vim/runtime/macros/less.sh"
-alias m="aerc"
+alias m="make -f makefile.personal"
 alias ml="matlab -nodesktop"
 alias nb="newsboat"
 alias pm="pulsemixer"

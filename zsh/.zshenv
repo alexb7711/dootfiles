@@ -8,7 +8,7 @@ PATH=$PATH:$HOME/.local/bin
 
 # Default Programs
 export BROWSER="brave-browser"
-export EDITOR="vim"
+export EDITOR="nvim"
 export LANG="en_US.UTF-8"
 export PDF_READER="zathura"
 export QT_QPA_PLATFORMTHEME=qt5ct
@@ -45,9 +45,6 @@ export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:/usr/share/terminfo"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh/"
 
 export LESSHISTFILE="-"
-
-export MYVIMRC='~/.config/vim/vimrc'
-export VIMINIT='source $MYVIMRC'
 
 export _JAVA_AWT_WM_NONREPARENTING=1 # <-- So matlab will load
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot=$HOME/.config/java

@@ -9,5 +9,3 @@ add Control      = Control_L
 !! Make menu key a super key
 keycode 135      = Super_R
 
-! Map S-<space> to Alt
-! keycode 65 = space Alt_R

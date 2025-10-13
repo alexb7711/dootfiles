@@ -11,24 +11,21 @@
 # I source them here with the line below.
 
 if [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/x11/xprofile" ]; then
-	. "${XDG_CONFIG_HOME:-$HOME/.config}/x11/xprofile"
+        . "${XDG_CONFIG_HOME:-$HOME/.config}/x11/xprofile"
 else
-	. "$HOME/.xprofile"
+        . "$HOME/.xprofile"
 fi
-
-# Activate dbus variables
-dbus-update-activation-environment --all
 
 ## If the device is a laptop and `Xmodmap` if Xmodmap exists load it
 [ "$(hostnamectl chassis)" = "laptop" ] && [ -e $HOME/.config/x11/xmodmap ] && xmodmap $HOME/.config/x11/xmodmap 
 
 ## When using a your dumb keyboard can't change key maps
 ## Note that this also runs 'xmodmap ~/.Xmodmap'
-##swapkeys
+# swapkeys
 
 ## Used to solve seahorse issues with custom xinitrc
 ## https://wiki.archlinux.org/title/GNOME/Keyring
-# source /etc/X11/xinit/xinitrc.d/50-systemd-user.sh
+source /etc/X11/xinit/xinitrc.d/50-systemd-user.sh
 
 # Relaunch DWM if the binary changes, otherwise bail
  csum=""
@@ -38,7 +35,14 @@ do
     if [ "$csum" != "$new_csum" ]
     then
         csum=$new_csum
-        dbus-launch ssh-agent dwm
+        ## Check if a dbus session is running
+        if test -z "$DBUS_SESSION_BUS_ADDRESS" ; then
+                logger "Starting dbus session"
+                dbus-launch dwm
+        else
+                logger "dbus session has already been executed"
+                exec dwm
+        fi
     else
         exit 0
     fi

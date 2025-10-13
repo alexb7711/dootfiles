@@ -18,4 +18,4 @@ elif [ "$TERM" = "linux" ]; then
   fi
 fi
 
-xmodmap ~/.Xmodmap
+xmodmap ~/.config/x11/xmodmap

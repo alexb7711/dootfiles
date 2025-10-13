@@ -3,6 +3,9 @@
 # Create the config directory if it does not exist
 [ ! -d "$HOME/.config/" ] && mkdir -p "$HOME/.config"
 
+# Create the `~/.local/bin` directory if it does not exist
+[ ! -d "$HOME/.local/bin" ] && mkdir -p "$HOME/.local/bin"
+
 # Define list of folders to 
 conf_list=($(find . -maxdepth 1 -type d -not -name "." -not -name ".git"))
 

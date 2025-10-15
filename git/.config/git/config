@@ -2,14 +2,14 @@
 # General
 ################################################################################
 [init]
-	defaultBranch = main
+        defaultBranch = main
 [user]
-	name = Alexander Brown
-	email = alex.brown7711@gmail.com
+        name = Alexander Brown
+        email = alex.brown7711@gmail.com
 [core]
-	editor   = nvim
-	; autocrlf = input # Auto-convert correct line endings
-	; eol = auto
+        editor   = nvim
+        ; autocrlf = input # Auto-convert correct line endings
+        ; eol = auto
         whitespace = error # Complain if trying to commit only white space
         preloadindex = true # Load index into memory
 [advice]
@@ -22,7 +22,7 @@
 # Color
 ################################################################################
 [color]
-	ui = auto
+        ui = auto
 [color "meta"]
         meta = black bold
         frag = magenta
@@ -40,8 +40,8 @@
 # Aliases
 ################################################################################
 [alias]
-	lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
-	lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+        lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+        lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
         lg = !"git lg1"
 
 [url "git@github.com:alexb7711/"]
@@ -58,7 +58,7 @@
         followTags = true # Push tags with just a push
 [pull]
         default = current
-	rebase = false
+        rebase = false
 [diff]
         context = 3
         renames = copies # Don't show the diff of renamed/copied files
@@ -79,21 +79,22 @@
 # Merging
 ################################################################################
 [merge]
-	tool = "vimdiff"
-; [mergetool]
-	; prompt = false
-; [mergetool "vim"]
-        ; cmd = vim -d -c \"wincmd l\" -c \"norm ]c\" \"$LOCAL\" \"$MERGED\" \"$REMOTE\"
+        tool = nvimmerge
+[mergetool]
+        prompt = false
+        keepBackup = false
+        trustExitCode = true
+[mergetool "nvimmerge"]
+	cmd = "nvim -d -c \"wincmd l\" -c \"norm ]c\" \"$LOCAL\" \"$MERGED\" \"$REMOTE\""
 
 ################################################################################
 # Diff
 ################################################################################
 [diff]
-        tool = "vim"
-
+        tool = nvimdiff
 [difftool]
         prompt = false
-[difftool "vim"]
-        cmd = vim - -R -c 'set foldmethod=syntax'
-[config "pull"]
-	rebase = false
+        keepBackup = false
+        trustExitCode = true
+[difftool "nvimdiff"]
+	cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""

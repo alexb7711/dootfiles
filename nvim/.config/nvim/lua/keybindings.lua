@@ -165,3 +165,33 @@ vim.keymap.set('c', '<C-f>', '<Right>', { noremap = true, silent = true }) -- Fo
 vim.keymap.set('c', '<C-b>', '<Left>', { noremap = true, silent = true })  -- Backward character
 vim.keymap.set('c', '<C-a>', '<Home>', { noremap = true, silent = true })  -- Beginning of line
 vim.keymap.set('c', '<C-e>', '<End>', { noremap = true, silent = true })
+
+-- =============================================================================
+-- Insert Keybindings
+-- =============================================================================
+vim.api.nvim_create_autocmd('LspAttach', {
+   group = lsp_group,
+   callback = function(args)
+      local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+
+      -- Enable auto-completion. Note: Use CTRL-Y to select an item. |complete_CTRL-Y|
+      if client:supports_method('textDocument/completion') then
+         vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = true})
+
+         -- Add `<Tab>` completion
+         vim.keymap.set("i", "<Tab>", function()
+            local line = vim.fn.getline(".")
+            local col = vim.fn.col(".") - 1  -- Column is 1-indexed, so subtract 1
+
+            -- Check if cursor is at the start of the line or after a space
+            if col == 0 or line:sub(col, col) == " " then
+               return "<Tab>"  -- Insert a literal tab
+            else
+               -- Otherwise, trigger completion (e.g., nvim-cmp)
+               -- return "<C-x><C-o>"  -- Trigger completion from insert mode
+               return vim.lsp.completion.get()
+            end
+         end, { expr = true, noremap = true })
+      end
+   end,
+})

@@ -2,8 +2,13 @@
 
 # Determine where to start search from
 DIR=$(
-        find "${HOME}" -maxdepth 5 -type d |
-        dmenu -l 30 -p "Project: "
+        if dmenu -v > /dev/null 2>&1
+        then
+                find "${HOME}" -maxdepth 5 -type d |
+                dmenu -l 30 -p "Project: "
+        else
+                find "${HOME}" -maxdepth 5 -type d | fzf
+        fi
 )
 
 [ ! -z "${DIR}" ] && echo "${DIR}"

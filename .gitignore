@@ -12,6 +12,7 @@ zathura/.config/zathura/zathurarc.backup
 .zcompdump
 zsh/.config/zsh/.zcompdump
 zsh/.config/zsh/.zcompcache/
+zsh/.config/zsh/work_cfg
 
 # X11
 x11/.config/x11/xauthority

@@ -1,101 +1,37 @@
-#!/usr/bin/env bash
-#
-# Script name: dm-logout
-# Description: Logout, shutdown, reboot or lock screen.
-# Dependencies: dmenu, systemd, slock, notify-send
-# GitLab: https://www.gitlab.com/dwt1/dmscripts
-# License: https://www.gitlab.com/dwt1/dmscripts/LICENSE
-# Contributors: Derek Taylor,
-#               Simon Ingelsson
+#!/bin/sh
 
-# Set with the flags "-e", "-u","-o pipefail" cause the script to fail
-# if certain things happen, which is a good thing.  Otherwise, we can
-# get hidden bugs that are hard to discover.
-set -euo pipefail
+# A dmenu wrapper script for system functions.
+export WM="dwm"
+case "$(readlink -f /sbin/init)" in
+	*systemd*) ctl='systemctl' ;;
+	*) ctl='loginctl' ;;
+esac
 
-_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo ".")")" && pwd)"
-if [[  -f "${_path}/_dm-helper.sh" ]]; then
-  # shellcheck disable=SC1090,SC1091
-  source "${_path}/_dm-helper.sh"
-else
-  # shellcheck disable=SC1090
-  echo "No helper-script found"
-fi
-
-# script will not hit this if there is no config-file to load
-# shellcheck disable=SC1090
-source "$(get_config)"
-
-# use notify-send if run in dumb term
-# TODO: add abillity to control from config.
-_out="echo"
-if [[ ${TERM} == 'dumb' ]]; then
-    _out="notify-send"
-fi
-
-output(){
-    ${_out} "dm-logout" "$@"
+wmpid(){ # This function is needed if there are multiple instances of the window manager.
+	tree="$(pstree -ps $$)"
+	tree="${tree#*$WM(}"
+	echo "${tree%%)*}"
 }
 
-main() {
-    # An array of options to choose.
-    declare -a options=(
-    "Lock screen"
-    "Logout"
-    "Reboot"
-    "Shutdown"
-    "Suspend"
-    "Quit"
-    )
-
-    # Piping the above array into dmenu.
-    # We use "printf '%s\n'" to format the array one item to a line.
-    choice=$(printf '%s\n' "${options[@]}" | ${DMENU} -p 'Shutdown menu:' "${@}")
-
-    # What to do when/if we choose one of the options.
-    case $choice in
-        'Logout')
-            if [[ "$(echo -e "No\nYes" | ${DMENU} -p "${choice}?" "${@}" )" == "Yes" ]]; then
-		    pkill -KILL -u ${USER}
-            else
-                output "User chose not to logout." && exit 1
-            fi
-            ;;
-        'Lock screen')
-            # shellcheck disable=SC2154
-            ${logout_locker}
-            ;;
-        'Reboot')
-            if [[ "$(echo -e "No\nYes" | ${DMENU} -p "${choice}?" "${@}" )" == "Yes" ]]; then
-               systemctl reboot
-            else
-                output "User chose not to reboot." && exit 0
-            fi
-            ;;
-        'Shutdown')
-            if [[ "$(echo -e "No\nYes" | ${DMENU} -p "${choice}?" "${@}" )" == "Yes" ]]; then
-               systemctl poweroff
-            else
-                output "User chose not to shutdown." && exit 0
-            fi
-            ;;
-        'Suspend')
-            if [[ "$(echo -e "No\nYes" | ${DMENU} -p "${choice}?" "${@}" )" == "Yes" ]]; then
-                systemctl suspend
-            else
-                output "User chose not to suspend." && exit 0
-            fi
-            ;;
-        'Quit')
-            output "Program terminated." && exit 0
-        ;;
-        # It is a common practice to use the wildcard asterisk symbol (*) as a final
-        # pattern to define the default case. This pattern will always match.
-        *)
-            exit 0
-        ;;
-    esac
-
+lock(){
+    mpc pause
+    pauseallmpv
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+    kill -44 $(pidof dwmblocks)
+    xset dpms force off
+    slock
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+    kill -44 $(pidof dwmblocks)
 }
 
-[[ "${BASH_SOURCE[0]}" == "${0}" ]] && main "$@"
+case "$(printf "🔒 lock\n🚪 leave $WM\n♻️ renew $WM\n🐻 hibernate\n🔃 reboot\n🖥️shutdown\n💤 sleep\n📺 display off" | dmenu -p 'Action: ')" in
+	'🔒 lock') lock ;;
+	"🚪 leave $WM") kill -TERM "$(wmpid)" ;;
+	"♻️ renew $WM") kill -HUP "$(wmpid)" ;;
+	'🐻 hibernate') slock $ctl hibernate -i ;;
+	'💤 sleep') slock $ctl suspend -i ;;
+	'🔃 reboot') $ctl reboot -i ;;
+	'🖥️ shutdown') $ctl poweroff -i ;;
+	'📺 display off') xset dpms force off ;;
+	*) exit 1 ;;
+esac

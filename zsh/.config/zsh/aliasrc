@@ -1,0 +1,43 @@
+#!/bin/sh
+
+[ ! -z $(command -v fzf) ]       && alias b="WD=\$(pwd);cd ~/Documents/library;zathura \"\$(fzf)\";cd \$WD"
+[ ! -z $(command -v lsd) ]       && alias ls="lsd -l"
+[ ! -z $(command -v trash-put) ] && alias rm="trash-put"
+
+alias db="gdb --tui"
+alias dirh="dirs -v"
+alias fm="ranger ."
+[ -f "/usr/share/vim/runtime/macros/less.sh" ] && alias less="/usr/share/vim/runtime/macros.sh"
+[ -f "/usr/share/nvim/runtime/scripts/less.sh" ] && alias less="/usr/share/nvim/runtime/scripts/less.sh"
+alias m="make -f makefile.personal"
+alias ml="matlab -nodesktop"
+alias nb="newsboat"
+alias pm="pulsemixer"
+alias qf="cd \$(quickfind)"
+alias s="ncspot"
+alias sp="source $HOME/.profile"
+alias sz="source $HOME/.config/zsh/.zshrc"
+alias tmux="tmux -2"
+alias v="nvim"
+alias weather="curl http://wttr.in"
+alias yt="yt-dlp"
+alias z="zathura"
+alias zshrc="vim ~/.config/zsh/.zshrc"
+
+# Configuration Files
+alias bm="v ~/.local/bin/misc/bookmarks"
+alias vp="v $HOME/.profile"
+alias vs="v -S .vs"
+
+# Lazy `git` commands
+alias g="git"
+alias gP="git push"
+alias ga="git add"
+alias gc="git commit"
+alias gcl="git clone"
+alias gd="git diff --output-indicator-new=' ' --output-indicator-old=' '"
+alias gdb="gdb -tui"
+alias gi="git init"
+alias gl="git log --all --graph --pretty=format:'%C(magenta)%h %(white) %an %ar%C(auto) %D%n%s%n'"
+alias gm="mbsync -c ~/.config/mu4e/mbsyncrc -a"
+alias gp="git pull"

@@ -1,4 +1,0 @@
-#!/bin/sh
-
-# curl wttr.in/"Clearfield, Davis County, Utah" 
-curl wttr.in/"Logan, Cache County, Utah"

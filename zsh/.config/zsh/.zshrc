@@ -24,15 +24,15 @@ setopt inc_append_history
 #===============================================================================#
 # FILES TO SOURCE
 #===============================================================================#
-[ -e "$HOME/.config/aliasrc" ]           && source "$HOME/.config/aliasrc"
-[ -e "$HOME/.config/work_cfg" ]          && source "$HOME/.config/work_cfg"
+[ -e "$HOME/.config/zsh/aliasrc" ]           && source "$HOME/.config/zsh/aliasrc"
+[ -e "$HOME/.config/zsh/work_cfg" ]          && source "$HOME/.config/zsh/work_cfg"
 
 #===============================================================================#
 # Prompt
 #===============================================================================#
 function precmd()
 {
-    export PROMPT=$'$fg[green]%B[%@ ]%b : %U$fg[cyan]${HOST}@%d%u$fg[white] \n> '
+    export PROMPT=$'$fg[green]%B[%@ ]%b : %U$fg[cyan]${HOST}@%d%u$fg[white] \n❯ '
 }
 
 # Enable colors and change prompt:

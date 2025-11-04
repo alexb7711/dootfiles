@@ -174,6 +174,11 @@ vim.api.nvim_create_autocmd('LspAttach', {
    callback = function(args)
       local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
 
+      -- Telescope buffer jump
+      -- vim.keymap.set('n', '<leader>fi', function(pos) require('telescope.builtin').lsp_document_symbols() end, {})
+      vim.keymap.set('n', '<leader>fi', require('telescope.builtin').lsp_document_symbols, {})
+      vim.keymap.set('n', '<leader>fI', require('telescope.builtin').lsp_workspace_symbols, {})
+
       -- Enable auto-completion. Note: Use CTRL-Y to select an item. |complete_CTRL-Y|
       if client:supports_method('textDocument/completion') then
          vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = true})

@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# A script to convert all filenames in the current directory to
+# lowercase, replacing spaces, hyphens, and dots with single underscores.
+
+# Safely handle filenames with spaces and other special characters.
+IFS=$'\n'
+
+# Loop through each file in the current directory.
+for file in *; do
+    # Skip directories to prevent errors.
+    if [ -d "$file" ]; then
+        continue
+    fi
+
+    # 1. Convert the filename to lowercase.
+    lower_case_name="${file,,}"
+
+    # 2. Replace common separators (spaces, hyphens, dots) with underscores.
+    intermediate_name="${lower_case_name//[ -]/_}"
+
+    # 3. Replace any sequence of multiple underscores with a single underscore.
+    new_name=$(echo "$intermediate_name" | sed 's/__*/_/g')
+
+    # 4. Remove leading and trailing underscores for cleanliness.
+    new_name=$(echo "$new_name" | sed 's/^_//; s/_$//')
+
+    # If the new name is different from the original, rename the file.
+    if [[ "$file" != "$new_name" ]]; then
+        echo "Renaming '$file' to '$new_name'"
+        mv -- "$file" "$new_name"
+    fi
+done
+
+echo "Done."
+

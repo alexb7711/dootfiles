@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 BIB_FILE="${HOME}/latex/uni.bib"
 [ -f "${BIB_FILE}" ] || BIB_FILE="${2:-$(find "${HOME}" -path "${HOME}/.*" \
@@ -17,10 +17,14 @@ fpdf() {
 	doi="$(pdfinfo "${pdf}" 2> "/dev/null" | filter)"
 
 	[ "${doi}" ] || doi="$(pdftotext -q -l "2" "${pdf}" - 2> "/dev/null" | filter)"
-
 	[ "${doi}" ] || printf "%s\n" "No DOI found for PDF: ${pdf}" >&2
 
-	printf "%s\n" "${doi}"
+        [ "${doi}" ] && printf "Detected DOI: %s\n" "${doi}" >&2
+
+        [ "${doi}" ] || printf "Enter DOI: " >&2
+        [ "${doi}" ] || read doi
+
+        printf "${doi}"
 }
 
 arrange() {

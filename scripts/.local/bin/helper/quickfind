@@ -1,14 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
 # Determine where to start search from
-DIR=$(
-        if dmenu -v > /dev/null 2>&1
-        then
-                find "${HOME}" -maxdepth 5 -type d |
-                dmenu -l 30 -p "Project: "
-        else
-                find "${HOME}" -maxdepth 5 -type d | fzf
-        fi
-)
+DIR=$(dm-or-fzf "Project: " "$(find "${HOME}" -maxdepth 5 -type d -not -path '*.*')" )
 
-[ ! -z "${DIR}" ] && echo "${DIR}"
+[ -n "${DIR}" ] && echo "${DIR}" || exit 1

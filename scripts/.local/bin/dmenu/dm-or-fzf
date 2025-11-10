@@ -1,0 +1,24 @@
+#!/bin/bash
+
+### This is a helper script to prompt either `dmenu` or `fzf`, prioritizing `dmenu`. 
+### If neither are installed, the script will error out
+
+PROMPT="$1"
+shift
+LIST=("$@")
+
+DIR=$(
+        # If `dmenu` is installed
+        if command -v dmenu &> /dev/null; then
+                echo "${LIST[@]}" | dmenu -l 30 -P "${PROMPT}"
+        # Otherwise check for `fzf`
+        elif command -v fzf &> /dev/null; then
+                echo "${LIST[@]}" | fzf
+        # Else fail the search
+        else
+                exit 1
+        fi
+)
+
+# Return the directory
+echo "${DIR}"

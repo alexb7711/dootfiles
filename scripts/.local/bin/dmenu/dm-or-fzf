@@ -10,7 +10,7 @@ LIST=("$@")
 DIR=$(
         # If `dmenu` is installed
         if command -v dmenu &> /dev/null; then
-                echo "${LIST[@]}" | dmenu -l 30 -P "${PROMPT}"
+                echo "${LIST[@]}" | dmenu -l 30 -p "${PROMPT}"
         # Otherwise check for `fzf`
         elif command -v fzf &> /dev/null; then
                 echo "${LIST[@]}" | fzf

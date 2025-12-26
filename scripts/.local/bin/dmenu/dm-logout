@@ -18,13 +18,12 @@ lock(){
     pauseallmpv
     wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
     kill -44 $(pidof dwmblocks)
-    xset dpms force off
     slock
     wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
     kill -44 $(pidof dwmblocks)
 }
 
-case "$(printf "🔒 lock\n🚪 leave $WM\n♻️ renew $WM\n🐻 hibernate\n🔃 reboot\n🖥️shutdown\n💤 sleep\n📺 display off" | dmenu -p 'Action: ')" in
+case "$(printf "🔒 lock\n🚪 leave $WM\n♻️ renew $WM\n🐻 hibernate\n🔃 reboot\n🖥️ shutdown\n💤 sleep\n📺 display off" | dmenu -p 'Action: ')" in
 	'🔒 lock') lock ;;
 	"🚪 leave $WM") kill -TERM "$(wmpid)" ;;
 	"♻️ renew $WM") kill -HUP "$(wmpid)" ;;

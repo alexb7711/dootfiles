@@ -160,11 +160,14 @@ vim.keymap.set('v', '>', '>gv', {silent = true})
 -- TEST ON Arch PC
 -- =============================================================================
 vim.keymap.set('c', '<C-a>', 'Nop')
+vim.keymap.set('c', '<C-b>', 'Nop')
+vim.keymap.set('c', '<C-e>', 'Nop')
+vim.keymap.set('c', '<C-f>', 'Nop')
 
-vim.keymap.set('c', '<C-f>', '<Right>', { noremap = true, silent = true }) -- Forward character
-vim.keymap.set('c', '<C-b>', '<Left>', { noremap = true, silent = true })  -- Backward character
-vim.keymap.set('c', '<C-a>', '<Home>', { noremap = true, silent = true })  -- Beginning of line
-vim.keymap.set('c', '<C-e>', '<End>', { noremap = true, silent = true })
+vim.keymap.set('c', '<C-a>', '<Home>', { noremap = false, silent = false })  -- Beginning of line
+vim.keymap.set('c', '<C-b>', '<Left>', { noremap = false, silent = false })  -- Backward character
+vim.keymap.set('c', '<C-e>', '<End>', { noremap = false, silent = false })   -- End of line
+vim.keymap.set('c', '<C-f>', '<Right>', { noremap = false, silent = false }) -- Forward character
 
 -- =============================================================================
 -- Insert Keybindings

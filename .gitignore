@@ -19,3 +19,6 @@ x11/.config/x11/xauthority
 
 # nvim
 lazy-lock.json
+
+# Git
+git/.config/git/work.config

@@ -10,14 +10,18 @@ require("util.functions")
 -- Functions
 -- =============================================================================
 function PythonFormatBuffer()
-   -- Check if python black should be ran
-   local config_found = search_in_file("pyproject.toml", "[tool.black]")
-   if config_found then
-      -- Format the buffer
-      local cursor_pos = vim.fn.getpos('.')
-      vim.fn.system("black -q " .. vim.fn.expand("%"))
-      vim.fn.setpos('.', cursor_pos)
-      vim.cmd('edit') -- Reread the file
+   -- Check if `pyproject.toml` file exists
+   pyproject = "pyproject.toml"
+   if vim.fn.filereadable(filepath) ~= 0 then
+      -- Check if `black` should be ran
+      local config_found = search_in_file(pyproject, "[tool.black]")
+      if config_found then
+         -- Format the buffer
+         local cursor_pos = vim.fn.getpos('.')
+         vim.fn.system("black -q " .. vim.fn.expand("%"))
+         vim.fn.setpos('.', cursor_pos)
+         vim.cmd('edit') -- Reread the file
+      end
    end
 end
 
@@ -29,7 +33,8 @@ end
 vim.opt_local.wrap = false
 
 -- Set vertical column
-vim.opt_local.colorcolumn = "90"
+-- vim.opt_local.colorcolumn = "90"
+vim.opt_local.colorcolumn = {79, 99}
 
 -- Indentation
 vim.opt_local.autoindent = true

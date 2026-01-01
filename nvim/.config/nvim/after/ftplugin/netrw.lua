@@ -7,8 +7,13 @@
 --"=============================================================================
 -- Configuration
 --"=============================================================================
-vim.opt_local.number = false
-vim.opt_local.relativenumber = false
+vim.opt_local.number = false -- Disable line numbers
+vim.opt_local.relativenumber = false -- Disable line numbers
+
+vim.g.netrw_keepdir = 0 -- Sync PWD with browsing directory
+
+-- Highlight marked files
+vim.api.nvim_set_hl(0, "netrwMarkFile", { link = "Search" }) 
 --
 --"=============================================================================
 -- Keybindings

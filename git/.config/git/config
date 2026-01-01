@@ -6,6 +6,8 @@
 [user]
         name = Alexander Brown
         email = alex.brown7711@gmail.com
+[includeIf "gitdir:~/code/work/"]
+        path = ~/.config/git/work.config
 [core]
         editor   = nvim
         ; autocrlf = input # Auto-convert correct line endings

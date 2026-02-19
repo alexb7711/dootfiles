@@ -19,17 +19,22 @@ return {
       vim.keymap.set('n', '<leader>fb', tel.buffers, {})
       vim.keymap.set('n', '<leader>fh', tel.help_tags, {})
 
-   require('telescope').setup {
-      defaults = {
-         mappings = {
-            i = {
-               ["<C-q>"] = ta.smart_send_to_qflist + ta.open_qflist,
-            },
-            n = {
-               ["<C-q>"] = ta.smart_send_to_qflist + ta.open_qflist,
+      require('telescope').setup {
+         pickers = {
+            colorscheme = {
+               enable_preview = true
+            }
+         },
+         defaults = {
+            mappings = {
+               i = {
+                  ["<C-q>"] = ta.smart_send_to_qflist + ta.open_qflist,
+               },
+               n = {
+                  ["<C-q>"] = ta.smart_send_to_qflist + ta.open_qflist,
+               },
             },
          },
-      },
-   }
+      }
    end,
 }

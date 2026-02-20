@@ -10,10 +10,9 @@
         path = ~/.config/git/work.config
 [core]
         editor   = nvim
-        ; autocrlf = input # Auto-convert correct line endings
-        ; eol = auto
         whitespace = error # Complain if trying to commit only white space
         preloadindex = true # Load index into memory
+        hooksPath = ~/.config/git/hooks
 [advice]
         addEmptyPathspec = false
         pushNonFastForward = false

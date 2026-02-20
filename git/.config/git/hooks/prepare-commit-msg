@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Get the current branch name
+BRANCH_NAME=$(git symbolic-ref --short HEAD)
+
+# Skip if branch name is empty (e.g., during rebase)
+if [ -z "$BRANCH_NAME" ]; then
+  exit 0
+fi
+
+# Optional: Skip specific branches (e.g., main, master, release)
+SKIP_BRANCHES=("main" "master" "develop" "release")
+for branch in "${SKIP_BRANCHES[@]}"; do
+  if [ "$BRANCH_NAME" = "$branch" ]; then
+    exit 0
+  fi
+done
+
+# Check if branch name is already in the commit message
+# if grep -q "[$BRANCH_NAME]" "$1"; then
+#   exit 0
+# fi
+
+# Prepend the branch name to the commit message
+BRANCH_NAME="${BRANCH_NAME#*/}" # Strip out the leading text
+BRANCH_NAME="${BRANCH_NAME%%-[^0-9]*}" # Strip out the leading text
+sed -i.bak "1s/^/[$BRANCH_NAME] /" "$1"

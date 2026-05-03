@@ -35,13 +35,15 @@ end
 -- Construct the status line
 function BuildStatusline()
    return table.concat{
-      "%{luaeval('StatuslineGit()')}",
+      "%#SpellBad#",
       "%{luaeval('HasPaste()')}",
-      "%#DiffText#",
+      "%#Title#",
+      "%{luaeval('StatuslineGit()')}",
+      "%#StatusLine#",
       " %f %m",
       "%#CursorColumn#",
       "%=",
-      "%#DiffAdd#",
+      "%#WildMenu#",
       " %y",
       " %{&fileencoding?&fileencoding:&encoding}",
       " %l:%c",

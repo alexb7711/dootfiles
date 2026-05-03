@@ -7,6 +7,7 @@
 return {
    cmd = {
       "clangd",
+      "--compile-commands-dir=./build",
       "--background-index",
       "--clang-tidy",
       "--header-insertion=iwyu",

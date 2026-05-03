@@ -9,9 +9,9 @@ vim.opt.termguicolors = true
 vim.cmd('syntax enable')
 
 --Color Scheme Settings
-vim.cmd('colorscheme lunaperche')
+-- vim.cmd('colorscheme lunaperche')
+vim.cmd('colorscheme retrobox')
 
--- set background=dark
+vim.cmd.background=dark
 -- vim.cmd("hi Normal guibg=NONE ctermbg=NONE")
--- vim.cmd(hi EndOfBuffer guibg=NONE ctermbg=NONE)
--- vim.cmd(hi Terminal guibg=NONE ctermbg=NONE)
+-- vim.cmd("hi EndOfBuffer guibg=NONE ctermbg=NONE")

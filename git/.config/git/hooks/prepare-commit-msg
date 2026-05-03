@@ -3,25 +3,30 @@
 # Get the current branch name
 BRANCH_NAME=$(git symbolic-ref --short HEAD)
 
-# Skip if branch name is empty (e.g., during rebase)
-if [ -z "$BRANCH_NAME" ]; then
-  exit 0
-fi
+# Exit if branch name is empty (e.g., during rebase)
+[ -z "$BRANCH_NAME" ] && exit 0
 
-# Optional: Skip specific branches (e.g., main, master, release)
+# Branches to skip
 SKIP_BRANCHES=("main" "master" "develop" "release")
 for branch in "${SKIP_BRANCHES[@]}"; do
-  if [ "$BRANCH_NAME" = "$branch" ]; then
-    exit 0
-  fi
+  [ "$BRANCH_NAME" = "$branch" ] && exit 0
 done
 
-# Check if branch name is already in the commit message
-# if grep -q "[$BRANCH_NAME]" "$1"; then
-#   exit 0
-# fi
+# Remove any prefix before slash (e.g., feature/ABCD-1234 → ABCD-1234)
+[[ "$BRANCH_NAME" == */* ]] && BRANCH_NAME="${BRANCH_NAME#*/}"
 
-# Prepend the branch name to the commit message
-BRANCH_NAME="${BRANCH_NAME#*/}" # Strip out the leading text
-BRANCH_NAME="${BRANCH_NAME%%-[^0-9]*}" # Strip out the leading text
-sed -i.bak "1s/^/[$BRANCH_NAME] /" "$1"
+# Extract story ID:
+# - Match letter-prefix + dash + number (ABCD-1234)
+# - Or just digits at the start (14-branch-name → 14)
+if [[ "$BRANCH_NAME" =~ ^([A-Za-z]+-[0-9]+|[0-9]+) ]]; then
+  STORY_ID="\#${BASH_REMATCH[1]}"
+else
+  STORY_ID="$BRANCH_NAME"
+fi
+
+# Exit if the commit message already contains the story ID
+grep -Fq "[$STORY_ID]" "$1" && exit 0
+
+# Prepend the story ID to the commit message
+echo $STORY_ID
+sed -i "1s/^/[$STORY_ID] /" "$1"

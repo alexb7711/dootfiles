@@ -5,32 +5,43 @@
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- LSP Supported Languages
+-- Base Configuration
 -- -----------------------------------------------------------------------------
-vim.lsp.enable({
+vim.lsp.config('*', {
+   root_markers = { '.git' },
+
+   capabilities = vim.lsp.protocol.make_client_capabilities(),
+
+   flags = {
+      debounce_text_changes = 150,
+   },
+})
+
+-- -----------------------------------------------------------------------------
+-- Load Language Configurations
+-- -----------------------------------------------------------------------------
+local languages = {
    'cc',
    'python',
    'lua',
    'bash',
-})
+   'tex',
+}
+
+for _, name in ipairs(languages) do
+   local ok, config = pcall(require, 'lsp.' .. name)
+   if ok then
+      vim.lsp.config(name, config)
+   end
+end
 
 -- -----------------------------------------------------------------------------
--- LSP Configuration
+-- Enable Servers
 -- -----------------------------------------------------------------------------
-vim.api.nvim_create_autocmd('LspAttach', {
-   group = vim.api.nvim_create_augroup('lsp_group', {}),
-   callback = function(args)
-      local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
-
-      -- Set up a default configuration
-      vim.lsp.config('*', {
-         root_markers = { '.git' },
-      })
-   end,
-})
+vim.lsp.enable(languages)
 
 -- -----------------------------------------------------------------------------
--- LSP Diagnostics
+-- Diagnostics
 -- -----------------------------------------------------------------------------
 vim.diagnostic.config({
    virtual_lines = {

@@ -3,10 +3,12 @@
 # Usage: ./script.sh [remote_ip]
 # Example: ./script.sh 192.168.1.50
 
-REMOTE_HOST="${1:-localhost:11434}"
-export OLLAMA_HOST="$REMOTE_HOST"
+# REMOTE_HOST="${1:-localhost:11434}"
+REMOTE_HOST="${OLLAMA_HOST}"
+export OLLAMA_HOST="http://$REMOTE_HOST"
+export OLLAMA_API_BASE="${OLLAMA_HOST}"
 
-echo "🔌 Connecting to Ollama at: $OLLAMA_HOST"
+echo "🔌 Connecting to Ollama at: $REMOTE_HOST"
 
 # Function to list models
 get_ollama_models() {
@@ -14,7 +16,7 @@ get_ollama_models() {
     models=($(ollama list | awk 'NR>1 {print $1}'))
 
     if [ ${#models[@]} -eq 0 ]; then
-        echo "❌ No Ollama models found at $OLLAMA_HOST."
+        echo "❌ No Ollama models found at $REMOTE_HOST."
         exit 1
     fi
 
@@ -43,6 +45,6 @@ fi
 
 selected_model=${models[$choice]}
 
-echo "🚀 Running Aider with model: ollama/${selected_model} (via $OLLAMA_HOST)"
+echo "🚀 Running Aider with model: ollama/${selected_model} (via $REMOTE_HOST)"
 # Pass the host to aider if it supports it, or rely on the exported env var
-aider --model "ollama/${selected_model}"
+aider --model "ollama/${selected_model}" --timeout 86400

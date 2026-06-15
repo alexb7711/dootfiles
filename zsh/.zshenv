@@ -49,5 +49,8 @@ export LESSHISTFILE="-"
 export _JAVA_AWT_WM_NONREPARENTING=1 # <-- So matlab will load
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot=$HOME/.config/java
 
+# Ollama
+export OLLAMA_HOST=http://chungo:11434
+
 # Execute X if it is not running
 [ ! -z $(command -v startx) ] && startx ${XINITRC}

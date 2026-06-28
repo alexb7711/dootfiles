@@ -4,199 +4,337 @@
 #	FUNCTIONS
 #################################################################################
 
-printHelp ()
-{
-	echo "Lazy Git (lg) is meant to make git quick and easy. Below are the accepted commands as well as a small description of what they do"
+printHelp () {
+   cat << EOF
+Lazy Git (lg) - Comprehensive Git Helper
 
-	echo ""
-	echo "COMMANDS"
-	echo ""
+COMMANDS
+  --branch         | -b    Create a new branch
+  --checkout       | -c    Checkout a branch (fzf: local & remote, deduped, auto-track)
+  --clean          | -cl   Delete local branches merged into develop/main (safe)
+  --conflicts      | -cf   List and open files with merge conflicts
+  --delete         | -d    Delete a branch locally and remotely
+  --diff           | -df   Check differences between current branch and origin
+  --fetch          | -f    Fetch the latest commits and prune
+  --fixup          | -x    Create a fixup commit for a specific commit (fzf)
+  --help           | -h    Print this help menu
+  --log            | -l    Print a graph log of all commits
+  --log-between    | -lb   Log between branch and origin/branch
+  --rename-local   | -rl   Rename the local branch
+  --rename-remote  | -rr   Rename the remote branch
+  --stage          | -st   Interactively stage files (fzf with diff preview)
+  --stash          | -ss   Interactively manage stashes (pop, drop, show via fzf)
+  --switch         | -s    Stash, switch branches, and pop stash
+  --squash         | -q    Squash merge a branch and push
+  --squash-no-push | -qn   Squash merge a branch without pushing
+  --push           | -p    Add, commit with message, and push
 
-	echo "Delete: Delete a branch both locally and remotely"
-	echo "--delete | -d   | delete)"
-	echo ""
-	
-	echo "Diff: Check the differences between current branch and origin/current branch"
-	echo "--diff | -df  | diff)"
-	echo ""
+EOF
+}
 
-	echo "Fetch: fetch the latest commits"
-	echo "--fetch  | -f   | fetch)"
-	echo ""
+# Helper: Ensure we are in a git repo
+ensure_git_repo() {
+   if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+      echo "Error: Not inside a git repository."
+      exit 1
+   fi
+}
 
-	echo "Help: Print out this help menu"
-	echo "--help   | -h   | help)"
-	echo ""
+# Helper: Fuzzy checkout logic (Local + Remote, deduped, tracks remote if needed)
+fzf_checkout() {
+   ensure_git_repo
+   git fetch --quiet --prune 2>/dev/null
 
-	echo "Log: Print a log of all the commits in a nice format"
-	echo "--log    | -l   | log)"
-	echo ""
-	
-	echo "Log Between: Print a log of all the commits between branch and origin/branch"
-	echo "--log-between    | -lb   | log-between)"
-	echo ""
+   branches=$(git branch -a --sort=-committerdate | \
+      grep -v 'remotes/origin/HEAD' | \
+      sed 's/^[ *]*//' | \
+      sed 's/^remotes\/origin\///' | \
+      sed 's/^remotes\///' | \
+      awk '!seen[$0]++')
 
-	echo "Rename Local: Rename the local branch"
-	echo "-rename-local | -rl | rename-local)"
-	echo ""
+   if [ -z "$branches" ]; then
+      echo "No branches found."
+      return 1
+   fi
 
-	echo "Switch: Unstage all current commits and switch branches"
-	echo "--switch | -s   | switch)"
-	echo ""
+   selected=$(echo "$branches" | fzf --height=50% --border \
+      --preview "git log -n 10 --oneline --color=always {} 2>/dev/null || echo 'No logs'" \
+      --preview-window=right:60%)
 
-	echo "Squash: Squash and merge all commits or squash specified commits in a branch"
-	echo "--squash | -q   | squash)"
-	echo ""
-	
-	echo "Squash No Push: Squash and merge all commits or squash specified commits in a branch without pushing"
-	echo "--squash-no-push | -qn   | squash-no-push)"
-	echo ""
+   [ -z "$selected" ] && return 0
 
-	echo "Push: Commits, adds message, and pushes to current branch"
-	echo "--push   | -p   | push)"
+   if git rev-parse --verify "$selected" >/dev/null 2>&1; then
+      git checkout "$selected"
+   else
+      remote_ref="origin/$selected"
+      if git rev-parse --verify "$remote_ref" >/dev/null 2>&1; then
+         echo "Creating local branch '$selected' tracking '$remote_ref'..."
+         git checkout --track "$remote_ref"
+      else
+         echo "Error: Branch '$selected' not found."
+         return 1
+      fi
+   fi
+}
+
+# Helper: Interactive Stash Management
+fzf_stash() {
+   ensure_git_repo
+   action="${2:-show}" # Default to show/preview if no action specified
+
+   if [ "$action" = "pop" ] || [ "$action" = "apply" ] || [ "$action" = "drop" ]; then
+      # Interactive selection for destructive/apply actions
+      stash_entry=$(git stash list | fzf --prompt="Select stash to $action: " \
+         --preview 'git stash show -p {1}' --preview-window=up:70%)
+
+      if [ -n "$stash_entry" ]; then
+         stash_id=$(echo "$stash_entry" | cut -d: -f1)
+         git stash "$action" "$stash_id"
+         echo "Performed $action on $stash_id"
+      fi
+   else
+      # Default: Just show/save. If args provided, save with message.
+      if [ -n "$2" ]; then
+         git stash push -m "$2"
+         echo "Stashed changes: $2"
+      else
+         # Interactive viewer
+         git stash list | fzf --preview 'git stash show -p {1}' --preview-window=up:70%
+      fi
+   fi
+}
+
+# Helper: Interactive Fixup
+fzf_fixup() {
+   ensure_git_repo
+   # Select a commit to fixup
+   target=$(git log --oneline -20 | fzf --prompt="Select commit to fixup: " \
+      --preview 'git show --color=always {1}' --preview-window=right:60% | awk '{print $1}')
+
+   if [ -n "$target" ]; then
+      git add -u
+      git commit --fixup="$target"
+      echo "Created fixup commit for $target."
+      echo "Run: git rebase -i --autosquash $target~1"
+   fi
+}
+
+# Helper: Interactive Stage (Add)
+fzf_stage() {
+   ensure_git_repo
+   # List modified/new files, preview diff, select multiple to add
+   files=$(git status -s | grep -E '^[ M?]' | awk '{print $2}' | fzf -m \
+      --preview 'git diff --color=always {}' \
+      --preview-window=right:60% \
+      --prompt="Select files to stage: ")
+
+   if [ -n "$files" ]; then
+      echo "$files" | xargs git add
+      echo "Staged files."
+   fi
+}
+
+# Helper: Clean Merged Branches
+clean_merged() {
+   ensure_git_repo
+   current=$(git symbolic-ref --short -q HEAD)
+   base_branch="develop"
+
+   # Fallback to master if develop doesn't exist
+   if ! git rev-parse --verify $(base_branch) >/dev/null 2>&1; then
+      base_branch="main"
+   fi
+
+   if [ "$current" = "$base_branch" ]; then
+      echo "Deleting local branches merged into $base_branch (excluding protected)..."
+      git branch --merged "$base_branch" | grep -v "\*" | grep -v "$base_branch" | grep -v "develop" | grep -v "staging" | while read -r branch; do
+      echo "Deleting $branch..."
+      git branch -d "$branch"
+   done
+   echo "Cleanup complete."
+else
+   echo "Warning: You are on '$current'. Switch to '$base_branch' to safely clean merged branches."
+   echo "Run: lg --switch $base_branch"
+   fi
+}
+
+# Helper: Conflict Resolution
+resolve_conflicts() {
+   ensure_git_repo
+   conflicts=$(git diff --name-only --diff-filter=U)
+
+   if [ -n "$conflicts" ]; then
+      echo "Found merge conflicts:"
+      echo "$conflicts"
+      echo ""
+      echo "Opening in editor (${EDITOR:-vim})..."
+      ${EDITOR:-vim} $conflicts
+   else
+      echo "No merge conflicts found."
+   fi
 }
 
 #################################################################################
 #				SCRIPT						#
-case "$1" in
-	--branch | -b | branch)
-		$branch=$2
-
-		if [ ! -z $branch ] 
-		then
-			git checkout -b "$branch"
-		else	
-			echo "Please specify a branch name"
-		fi
-		;;
-
-	--delete | -d | delete)
-		branch=$2
-
-		if [ ! -z $branch ]
-		then
-			git branch -D $branch
-			git push -d origin $branch
-		else
-			echo "Please specify a branch name"
-		fi
-		;;
-
-	--delete | -d | delete)
-		branch=$2
-
-		if [ ! -z $branch ]
-		then
-			git diff $branch origin/$branch
-		else
-			echo "Please specify a branch name"
-		fi
-		;;
-
-	--fetch  | -f   | fetch)
-		git fetch
-		;;
-
-	--help | -h | help)
-		printHelp
-		;;
-	
-	--log | -l | log)
-		git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''%C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
-		;;
-	
-	--log-between    | -lb   | log-between)
-		git fetch
-		remote_branch=$(git symbolic-ref --short -q HEAD)
-
-		if [ ! -z "$2" ]
-		then
-			remote_branch=$2
-		fi
-
-		echo "Showing logs between $remote_branch and origin/$remote_branch"
-		git log $remote_branch..origin/$remote_branch --oneline
-		;;
-	
-	-rename-local | -rl | rename-local)
-		new_branch_name=$2
-		old_branch_name="$(git symbolic-ref --short -q HEAD)"
-
-		if [ ! -z "$new_branch_name" ]
-		then
-			git branch -m "$old_branch_name" "$new_branch_name"
-		else
-			echo "Please specify a new branch name"
-		fi
-		;;
-
-	-rename-remote | -rr | rename-remote)
-		new_branch_name=$2
-		old_branch_name="$(git symbolic-ref --short -q HEAD)"
-
-		if [ ! -z "$new_branch_name" ]
-		then
-			git push origin :"$old_branch_name"
-			git push origin -u "$new_branch_name"
-		else
-			echo "Please specify a new branch name"
-		fi
-		;;
-
-	--switch | -s | switch)
-		branch=$2
-
-		if [ ! -z $branch ]
-		then 
-			git stash
-			git checkout -b $branch
-			git stash pop
-		else
-			echo "Please specify a branch name"
-		fi
-		;;
-
-	--squash | -q | squash)
-		branch="$2"
-		comment="$3"
-
-		if [ ! -z "$branch" ] && [ ! -z "$comment" ]
-		then
-			git merge --squash $branch
-			git commit -m "$comment"
-			git push
-		else
-			echo "Please input a branch or commits to squash"
-		fi
-		;;
-	
-	--squash-no-push | -qn | squash-no-push)
-		branch="$2"
-		comment="$3"
-
-		if [ ! -z "$branch" ] && [ ! -z "$comment" ]
-		then
-			git merge --squash $branch
-			git commit -m "$comment"
-		else
-			echo "Please input a branch or commits to squash"
-		fi
-		;;
-	
-	--push | -p | push)
-		message="$2"
-		branch="$(git symbolic-ref --short -q HEAD)"
-		
-		if [ ! -z "$message" ]
-		then 
-			git add .
-			git commit -m "$message"
-			git push origin "$branch"
-		else
-			echo "Please provide a commit message"
-		fi
-		;;
-esac
-
-#				SCRIPT						#
 #################################################################################
+
+# Ensure git repo for all commands except help
+if [ "$1" != "--help" ] && [ "$1" != "-h" ] && [ "$1" != "help" ] && [ -n "$1" ]; then
+   ensure_git_repo
+fi
+
+case "$1" in
+   --branch | -b | branch)
+      branch="$2"
+      if [ -n "$branch" ]; then
+         git checkout -b "$branch"
+      else
+         echo "Please specify a branch name."
+      fi
+      ;;
+
+   --checkout | -c | checkout)
+      fzf_checkout
+      ;;
+
+   --clean | -cl | clean)
+      clean_merged
+      ;;
+
+   --conflicts | -cf | conflicts)
+      resolve_conflicts
+      ;;
+
+   --delete | -d | delete)
+      branch="$2"
+      if [ -n "$branch" ]; then
+         git branch -D "$branch" 2>/dev/null || echo "Local branch '$branch' did not exist."
+         git push origin --delete "$branch" 2>/dev/null || echo "Remote branch '$branch' did not exist."
+         echo "Branch '$branch' deleted."
+      else
+         echo "Please specify a branch name."
+      fi
+      ;;
+
+   --diff | -df | diff)
+      branch="$2"
+      if [ -n "$branch" ]; then
+         git diff "$branch" "origin/$branch"
+      else
+         current=$(git symbolic-ref --short -q HEAD)
+         git diff "$current" "origin/$current"
+      fi
+      ;;
+
+   --fetch  | -f   | fetch)
+      git fetch --prune
+      ;;
+
+   --fixup | -x | fixup)
+      fzf_fixup
+      ;;
+
+   --help | -h | help)
+      printHelp
+      ;;
+
+   --log | -l | log)
+      git log --graph --abbrev-commit --decorate \
+         --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''%C(white)%s%C(reset) %C(dim white)- %an%C(reset)' \
+         --all
+      ;;
+
+   --log-between | -lb | log-between)
+      git fetch
+      remote_branch=$(git symbolic-ref --short -q HEAD)
+      if [ -n "$2" ]; then
+         remote_branch="$2"
+      fi
+      echo "Showing logs between $remote_branch and origin/$remote_branch"
+      git log "$remote_branch"..origin/"$remote_branch" --oneline
+      ;;
+
+   --rename-local | -rl | rename-local)
+      new_branch_name="$2"
+      old_branch_name="$(git symbolic-ref --short -q HEAD)"
+      if [ -n "$new_branch_name" ]; then
+         git branch -m "$old_branch_name" "$new_branch_name"
+         echo "Renamed '$old_branch_name' to '$new_branch_name'."
+      else
+         echo "Please specify a new branch name."
+      fi
+      ;;
+
+   --rename-remote | -rr | rename-remote)
+      new_branch_name="$2"
+      old_branch_name="$(git symbolic-ref --short -q HEAD)"
+      if [ -n "$new_branch_name" ]; then
+         git push origin :"$old_branch_name"
+         git push -u origin "$new_branch_name"
+         echo "Remote renamed to '$new_branch_name'."
+      else
+         echo "Please specify a new branch name."
+      fi
+      ;;
+
+   --stage | -st | stage)
+      fzf_stage
+      ;;
+
+   --stash | -ss | stash)
+      fzf_stash "$1" "$2"
+      ;;
+
+   --switch | -s | switch)
+      branch="$2"
+      if [ -n "$branch" ]; then
+         git stash push -m "WIP before switch to $branch" >/dev/null 2>&1
+         git checkout "$branch"
+         git stash pop >/dev/null 2>&1
+         echo "Switched to '$branch'."
+      else
+         echo "Please specify a branch name."
+      fi
+      ;;
+
+   --squash | -q | squash)
+      branch="$2"
+      comment="$3"
+      if [ -n "$branch" ] && [ -n "$comment" ]; then
+         git merge --squash "$branch"
+         git commit -m "$comment"
+         git push
+      else
+         echo "Usage: lg --squash <branch> <commit_message>"
+      fi
+      ;;
+
+   --squash-no-push | -qn | squash-no-push)
+      branch="$2"
+      comment="$3"
+      if [ -n "$branch" ] && [ -n "$comment" ]; then
+         git merge --squash "$branch"
+         git commit -m "$comment"
+      else
+         echo "Usage: lg --squash-no-push <branch> <commit_message>"
+      fi
+      ;;
+
+   --push | -p | push)
+      message="$2"
+      branch="$(git symbolic-ref --short -q HEAD)"
+      if [ -n "$message" ]; then
+         git add .
+         git commit -m "$message"
+         git push origin "$branch"
+      else
+         echo "Please provide a commit message."
+      fi
+      ;;
+
+   *)
+      echo "Unknown command: $1"
+      printHelp
+      exit 1
+      ;;
+esac

@@ -4,3 +4,21 @@ tags
 makefile.personal
 sar_maps/
 .clangd
+
+# Aider
+node_modules/
+dist/
+build/
+target/
+out/
+coverage/
+
+*.lock
+*.min.js
+*.map
+
+__pycache__/
+*.pyc
+
+.env
+.env.*
